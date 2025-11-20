@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsyncAPI Documentation</title>
+    <link rel="stylesheet" href="https://unpkg.com/@asyncapi/react-component@1.2.0/styles/default.min.css">
+</head>
+<body>
+    <div id="asyncapi"></div>
+
+    <script src="https://unpkg.com/@asyncapi/react-component@1.2.0/browser/standalone/index.js"></script>
+    <script>
+        async function loadAsyncAPI() {
+            try {
+                const response = await fetch('asyncapi.yaml');
+                const asyncapiSpec = await response.text();
+                
+                AsyncApiStandalone.render({
+                    schema: asyncapiSpec,
+                    config: {
+                        show: {
+                            sidebar: true,
+                        }
+                    }
+                }, document.getElementById('asyncapi'));
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('asyncapi').innerHTML = (
+                    '<p>Ошибка загрузки документации. Убедитесь, что:<br>' +
+                    '1. Вы используете локальный сервер<br>' +
+                    '2. Версия AsyncAPI в YAML файле - 2.5.0 или ниже<br>' +
+                    '3. Файл asyncapi.yaml находится в той же папке</p>'
+                );
+            }
+        }
+
+        loadAsyncAPI();
+    </script>
+</body>
+</html>

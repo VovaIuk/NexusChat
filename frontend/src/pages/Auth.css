@@ -1,0 +1,138 @@
+.wrapper-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background-color: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+  backdrop-filter: blur(6px) saturate(120%);
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.logo{
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 6px 18px rgba(124,58,237,0.2);
+}
+
+.form-title {
+  font-size: 20px;
+  margin: 0;
+}
+
+p.lead {
+  margin: 6px 0 18px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field{
+  position: relative;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 6px;
+} 
+
+.field input[type="text"], 
+.field input[type="password"], 
+.field input[type="email"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--glass);
+  color: inherit;
+  outline: none;
+  transition: box-shadow .18s, transform .12s, border-color .12s;
+  font-size: 14px;
+}
+
+.field input::placeholder{
+  color: rgba(255,255,255,0.25);
+}
+
+.field input:focus {
+  box-shadow: 0 6px 20px rgba(2,6,23,0.5);
+  transform: translateY(-1px);
+  border-color: rgba(124,58,237,0.7);
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.remember {
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 8px 24px rgba(12,18,30,0.45);
+}
+
+.helper {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 12px;
+}
+
+@media (max-width:480px){
+  .card{
+    padding: 20px;
+    border-radius: 12px;
+  }
+  .logo{
+    width: 40px;
+    height: 40px;
+  }
+}

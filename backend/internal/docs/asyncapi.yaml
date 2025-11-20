@@ -1,0 +1,43 @@
+asyncapi: 2.6.0
+info:
+  title: Simple Chat API
+  version: 1.0.0
+  description: Простой пример AsyncAPI для чат-приложения
+
+servers:
+  production:
+    url: ws://localhost:8000/ws
+    protocol: ws
+    description: Production WebSocket server
+
+channels:
+  chat/message:
+    description: Основной канал для обмена сообщениями
+    publish:
+      summary: Отправить сообщение в чат
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            username:
+              type: string
+            message:
+              type: string
+            time:
+              type: string
+              format: date-time
+    subscribe:
+      summary: Получить сообщение из чата
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            username:
+              type: string
+            message:
+              type: string
+            time:
+              type: string
+              format: date-time
