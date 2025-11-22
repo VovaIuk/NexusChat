@@ -50,3 +50,4 @@ vendor/
 # Go workspace файл
 go.work
 server.txt
+tasks.txt

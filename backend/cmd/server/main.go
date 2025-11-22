@@ -16,5 +16,4 @@ func main() {
 	if err := wsServer.Start(); err != nil {
 		logrus.Errorf("Error with ws server: %v", err)
 	}
-
 }

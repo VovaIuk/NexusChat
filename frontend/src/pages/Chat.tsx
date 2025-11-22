@@ -3,36 +3,36 @@ import ChatItem from '../components/ChatItem'
 import { useState, useRef, useEffect } from 'react'
 import Message from '../components/Message';
 
+export interface WsMessage {
+  username: string;    
+  message: string;    
+  time: string;   
+  IsReceived: boolean;
+}
+
+
 function Chat() {
-  const [typingText, setTypingText] = useState("")
+  const [typingText, setTypingText] = useState("");
+  const [messages, setMessages] = useState<WsMessage[]>([]);
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(()=>{
 
-    const testConnection = async () => {
-      try {
-        const response = await fetch('http://10.0.25.18:8003/test', {
-  method: 'GET',
-  mode: 'cors', // ← ВКЛЮЧАЕТ CORS проверку
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-        console.log('Сервер доступен');
-      } catch (error) {
-        console.error('Сервер недоступен', error);
-      }
-    };
-    
-    testConnection();
-
-    ws.current = new WebSocket("ws://10.0.25.18:8003/ws");
+    ws.current = new WebSocket("ws://192.168.0.15:8003/ws");
 
     ws.current.onopen = () => {
       console.log("WS: подключено");
     };
   
-    ws.current.onmessage = (event) => {
+    ws.current.onmessage = (event: MessageEvent) => {
+      try{
+        const message: WsMessage = JSON.parse(event.data);
+        setMessages(prevMessages => [...prevMessages, {...message,
+          IsReceived: true,
+        }])
+      } catch(error){
+        console.error('Error parsing WebSocket message:', error);
+      }
       console.log("WS: сообщение от сервера:", event.data);
     };
   
@@ -53,7 +53,7 @@ function Chat() {
   const handleSendMessage = () => {
     ws.current?.send(JSON.stringify({
       username: "Имя",
-      message: "Текст",
+      message: typingText,
     })
   )}
 
@@ -128,24 +128,13 @@ function Chat() {
             </div>
           </div>
           <div className="messages-container">
-          <Message
-            content='Привет! Как твои дела? dngrnignrigni rigbruweifuie weifbeuifbie eiugberigbier iewbgiergbier iegberugbier iergbreigbeirujjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj'
-            time='12:15'
-            isReceived={true}
-          />
-          <Message
-            content='Привет! Как твои дела? dngrnignrigni rigbruweifuie weifbeuifbie eiugberigbier iewbgiergbier iegberugbier iergbreigbeirujjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj'
-            time='12:15'
-            isReceived={false}
-          />
-            <div className="message received">
-              <div className="message-content">Привет! Как твои дела? dngrnignrigni rigbruweifuie weifbeuifbie eiugberigbier iewbgiergbier iegberugbier iergbreigbeirujjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj</div>
-              <div className="message-time">12:15</div>
-            </div>
-              <div className="message sent">
-                <div className="message-content">Привет! Всё отлично, только что закончил проект. А у тебя как?</div>
-                <div className="message-time">12:16</div>
-            </div>
+            {messages.map((message) => (
+              <Message
+              content={message.message}
+              time={message.time}
+              isReceived={message.IsReceived}
+            />
+            ))}
           </div>
           <div className="typing-indicator">
             Мария печатает
