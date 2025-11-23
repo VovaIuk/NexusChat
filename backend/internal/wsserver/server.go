@@ -1,6 +1,7 @@
 package wsserver
 
 import (
+	_ "embed"
 	"net/http"
 	"sync"
 	"time"
@@ -45,7 +46,7 @@ func NewWsServer(addr string) WSServer {
 }
 
 func (ws *wsServer) Start() error {
-	ws.mux.HandleFunc("/test", ws.HandlerTest)
+	ws.mux.HandleFunc("/api/v1/test", ws.HandlerTest)
 	ws.mux.HandleFunc("/ws", ws.wsHandler)
 	ws.mux.Handle("/docs/", http.StripPrefix("/docs/",
 		http.FileServer(http.Dir("internal/docs")),

@@ -1,0 +1,278 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API для взаимодействия с прошивками",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8003/api",
+      "description": "Локальный сервер для разработки"
+    },
+    {
+      "url": "http://192.168.0.15:8003/api",
+      "description": "IP ноутбука MAG"
+    }
+  ],
+  "paths": {
+    "/v1/test": {
+      "get": {
+        "summary": "Проверить работу сервера",
+        "tags": [
+          "Public"
+        ],
+        "responses": {
+          "200": {
+            "description": "Тестовое сообщение",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "Test handler"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/registration": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Создать аккаунт",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "tag",
+                  "name",
+                  "password"
+                ],
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "example": "example_user_tag"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "alex"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "12345678"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Аккаунт успешно создан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "tag",
+                    "name"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "tag": {
+                      "type": "string",
+                      "example": "example_user_tag"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "alex"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Получить JWT-токен",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "tag",
+                  "password"
+                ],
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "example": "example_user_tag"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "12345678"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешная аутентификация",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "user",
+                    "token"
+                  ],
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "tag",
+                        "name"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "tag": {
+                          "type": "string",
+                          "example": "example_user_tag"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "alex"
+                        }
+                      }
+                    },
+                    "token": {
+                      "type": "object",
+                      "required": [
+                        "refresh",
+                        "expiresIn",
+                        "type"
+                      ],
+                      "properties": {
+                        "refresh": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "expiresIn": {
+                          "type": "integer",
+                          "example": 3600
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "Bearer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/chats/{id}/history": {
+      "get": {
+        "summary": "Получить историю сообщений чата",
+        "description": "Возвращает список сообщений в указанном чате",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "Private"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID чата",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "description": "ID сообщения",
+                        "example": 1
+                      },
+                      "user_id": {
+                        "type": "integer",
+                        "description": "ID пользователя",
+                        "example": 113
+                      },
+                      "username": {
+                        "type": "string",
+                        "description": "Имя пользователя",
+                        "example": "alex"
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "Текст сообщения",
+                        "example": "Привет! Как дела?"
+                      },
+                      "time": {
+                        "type": "string",
+                        "description": "Время отправки сообщения",
+                        "example": "15:26"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
