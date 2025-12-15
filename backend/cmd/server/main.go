@@ -19,10 +19,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	addr = "0.0.0.0:8003"
-)
-
 func main() {
 	c, err := config.InitConfig()
 	if err != nil {

@@ -52,4 +52,5 @@ server.txt
 tasks.txt
 
 .env
+postgres/
 
