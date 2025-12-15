@@ -1,66 +1,64 @@
 package wsserver
 
 import (
-	_ "embed"
 	"net/http"
 	"sync"
 	"time"
-
-	"backend/internal/middleware"
 
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 )
 
-type wsServer struct {
-	mux       *http.ServeMux
-	server    *http.Server
+type WsServer struct {
 	upgrader  *websocket.Upgrader
+	rooms     map[int][]int // id чата: список пользователей
 	clients   map[*websocket.Conn]struct{}
 	mutex     *sync.RWMutex
 	broadcast chan *wsMessage
 }
 
-type WSServer interface {
-	Start() error
-}
-
-func NewWsServer(addr string) WSServer {
-	mux := http.NewServeMux()
-	handler := middleware.CORSMiddleware([]string{"http://localhost:5173"})(mux)
-	return &wsServer{
-		mux: mux,
-		server: &http.Server{
-			Addr:    addr,
-			Handler: handler,
-		},
+func NewWSServers() *WsServer {
+	return &WsServer{
 		upgrader: &websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
 				return true // потом сделать
 			},
 		},
 		clients:   map[*websocket.Conn]struct{}{},
+		rooms:     map[int][]int{},
 		mutex:     &sync.RWMutex{},
 		broadcast: make(chan *wsMessage),
 	}
 }
 
-func (ws *wsServer) Start() error {
-	ws.mux.HandleFunc("/api/v1/test", ws.HandlerTest)
-	ws.mux.HandleFunc("/ws", ws.wsHandler)
-	ws.mux.Handle("/docs/", http.StripPrefix("/docs/",
-		http.FileServer(http.Dir("internal/docs")),
-	))
+func (ws *WsServer) Start() {
 	go ws.writeToClientsBroadcast()
-	return ws.server.ListenAndServe()
 }
 
-func (ws *wsServer) HandlerTest(w http.ResponseWriter, r *http.Request) {
-	logrus.Info("test handler")
-	w.Write([]byte("Test handler"))
+func (ws *WsServer) Close() {
+	ws.mutex.Lock()
+	defer ws.mutex.Unlock()
+
+	for conn := range ws.clients {
+		if err := conn.WriteControl(websocket.CloseMessage,
+			websocket.FormatCloseMessage(websocket.CloseGoingAway, "server shutdown"),
+			time.Now().Add(5*time.Second)); err != nil {
+			logrus.Warnf("Error sending close message: %v", err)
+		}
+		conn.Close()
+	}
+
+	ws.clients = make(map[*websocket.Conn]struct{})
+
+	defer func() {
+		if recover() != nil {
+			logrus.Warn("Broadcast channel already closed")
+		}
+	}()
+	close(ws.broadcast)
 }
 
-func (ws *wsServer) wsHandler(w http.ResponseWriter, r *http.Request) {
+func (ws *WsServer) WsHandler(w http.ResponseWriter, r *http.Request) {
 	logrus.Info("web socket conn...")
 	conn, err := ws.upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -70,12 +68,13 @@ func (ws *wsServer) wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	logrus.Info(conn.RemoteAddr())
 	ws.mutex.Lock()
+
 	ws.clients[conn] = struct{}{}
 	ws.mutex.Unlock()
 	go ws.readFromClient(conn)
 }
 
-func (ws *wsServer) readFromClient(conn *websocket.Conn) {
+func (ws *WsServer) readFromClient(conn *websocket.Conn) {
 	for {
 		msg := new(wsMessage)
 		if err := conn.ReadJSON(msg); err != nil {
@@ -92,7 +91,7 @@ func (ws *wsServer) readFromClient(conn *websocket.Conn) {
 	ws.mutex.Unlock()
 }
 
-func (ws *wsServer) writeToClientsBroadcast() {
+func (ws *WsServer) writeToClientsBroadcast() {
 	for msg := range ws.broadcast {
 		ws.mutex.RLock()
 		for conn := range ws.clients {

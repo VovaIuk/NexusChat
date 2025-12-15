@@ -42,7 +42,6 @@ example.html
 # Выходные директории Go
 out/
 bin/
-pkg/
 
 # Go модули (если используете vendor)
 vendor/
@@ -51,3 +50,6 @@ vendor/
 go.work
 server.txt
 tasks.txt
+
+.env
+

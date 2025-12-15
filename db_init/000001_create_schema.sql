@@ -1,0 +1,27 @@
+CREATE TABLE Users (
+	id SERIAL PRIMARY KEY,
+	tag VARCHAR(50) NOT NULL UNIQUE,
+	username VARCHAR(50) NOT NULL,
+	password VARCHAR(100) NOT NULL
+);
+
+
+CREATE TABLE Chats(
+	id SERIAL PRIMARY KEY
+);
+
+CREATE TABLE User_Chat(
+	user_id INT NOT NULL,
+	chat_id INT NOT NULL,
+	PRIMARY KEY (user_id, chat_id),
+	FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+	FOREIGN KEY (chat_id) REFERENCES Chats(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Messages (
+	id SERIAL PRIMARY KEY,
+	user_id INT NOT NULL,
+	chat_id INT NOT NULL,
+	text TEXT NOT NULL,
+	FOREIGN KEY (user_id, chat_id) REFERENCES User_Chat(user_id, chat_id) ON DELETE CASCADE
+);
