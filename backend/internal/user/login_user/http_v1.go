@@ -17,9 +17,9 @@ func HTTP_V1(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := usecase.RegisterUser(context.Background(), input)
+	output, err := usecase.LoginUser(context.Background(), input)
 	if err != nil {
-		http.Error(w, "Registration failed: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Autentification failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

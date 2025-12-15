@@ -3,41 +3,55 @@ package login_user
 import (
 	"backend/internal/adapter/postgres"
 	"backend/internal/domain"
+	jwttoken "backend/pkg/jwt_token"
 	"context"
 )
 
 type Postgres interface {
-	CreateUser(ctx context.Context, user domain.User) (*domain.User, error)
+	GetUserByTagAndPassword(ctx context.Context, tag string, password string) (*domain.User, error)
+}
+
+type JWTManager interface {
+	CreateToken(userID int, usertag, username string) (string, error)
+	GetExpiresInSeconds() int
 }
 
 type Usecase struct {
-	postgres Postgres
+	postgres   Postgres
+	jwtManager JWTManager
 }
 
-func New(postgres *postgres.Pool) *Usecase {
+func New(postgres *postgres.Pool, jwtManager *jwttoken.JWTManager) *Usecase {
 	uc := &Usecase{
-		postgres: postgres,
+		postgres:   postgres,
+		jwtManager: jwtManager,
 	}
 	usecase = uc
 	return uc
 }
 
-func (u *Usecase) RegisterUser(ctx context.Context, input Input) (Output, error) {
-	user, err := domain.NewUser(input.Usertag, input.Username, input.Password)
+func (u *Usecase) LoginUser(ctx context.Context, input Input) (Output, error) {
+	user, err := u.postgres.GetUserByTagAndPassword(context.Background(), input.Usertag, input.Password)
 	if err != nil {
 		return Output{}, err
 	}
 
-	createUser, err := u.postgres.CreateUser(ctx, user)
+	token, err := u.jwtManager.CreateToken(user.ID, user.Tag, user.Username)
 	if err != nil {
 		return Output{}, err
 	}
 
 	return Output{
-		Id:       createUser.ID,
-		Usertag:  createUser.Tag,
-		Username: createUser.Username,
-		Password: createUser.Password,
+		User: User{
+			ID:   user.ID,
+			Tag:  user.Tag,
+			Name: user.Username,
+		},
+		Token: Token{
+			Refresh:   token,
+			ExpiresIn: u.jwtManager.GetExpiresInSeconds(),
+			Type:      "Bearer",
+		},
 	}, nil
 
 }

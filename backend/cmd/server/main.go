@@ -5,6 +5,8 @@ import (
 	"backend/internal/adapter/postgres"
 	httpcontroller "backend/internal/controller/http"
 	"backend/internal/middleware"
+	"backend/internal/user/login_user"
+	"backend/internal/user/register_user"
 	"backend/internal/wsserver"
 	"backend/pkg/httpserver"
 	"context"
@@ -39,10 +41,13 @@ func AppRun(ctx context.Context, c config.Config) error {
 		return fmt.Errorf("postgres.New: %w", err)
 	}
 
-	middleware.InitAuth(c.JWT)
+	jwtManager := middleware.InitAuth(c.JWT)
 
 	wsServer := wsserver.NewWSServers()
 	wsServer.Start()
+
+	login_user.New(pgPool, jwtManager)
+	register_user.New(pgPool)
 
 	router := httpcontroller.Router(wsServer)
 	server := httpserver.New(router, c.HTTP)

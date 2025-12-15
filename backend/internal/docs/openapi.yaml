@@ -69,7 +69,7 @@ paths:
                     type: string
                     example: "alex"
 
-  /v1/auth:
+  /v1/login:
     post:
       tags: [Auth]
       summary: "Получить JWT-токен"

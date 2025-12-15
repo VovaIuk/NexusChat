@@ -17,8 +17,9 @@ const (
 
 var jwtManager *jwttoken.JWTManager
 
-func InitAuth(c jwttoken.Config) {
+func InitAuth(c jwttoken.Config) *jwttoken.JWTManager {
 	jwtManager = jwttoken.NewJWTManager(c)
+	return jwtManager
 }
 
 func AuthMiddleware() func(http.Handler) http.Handler {

@@ -104,7 +104,7 @@
         }
       }
     },
-    "/v1/auth": {
+    "/v1/login": {
       "post": {
         "tags": [
           "Auth"

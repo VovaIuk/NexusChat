@@ -2,6 +2,7 @@ package wsserver
 
 import (
 	"backend/internal/middleware"
+	"backend/internal/user/login_user"
 	"backend/internal/user/register_user"
 	"backend/internal/wsserver"
 	"net/http"
@@ -20,7 +21,8 @@ func Router(ws *wsserver.WsServer) http.Handler {
 
 	apiMux.Handle("/v1/", http.StripPrefix("/v1", apiV1Mux))
 
-	privateMux.HandleFunc("/registration", register_user.HTTP_V1)
+	apiV1Mux.HandleFunc("/login", login_user.HTTP_V1)
+	apiV1Mux.HandleFunc("/registration", register_user.HTTP_V1)
 
 	privateHandler := middleware.AuthMiddleware()(privateMux)
 	apiV1Mux.Handle("/private/", http.StripPrefix("/private", privateHandler))

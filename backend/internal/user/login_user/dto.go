@@ -2,13 +2,22 @@ package login_user
 
 type Input struct {
 	Usertag  string `form:"tag"`
-	Username string `form:"name"`
 	Password string `form:"password"`
 }
 
 type Output struct {
-	Id       int    `json:"id"`
-	Usertag  string `json:"tag"`
-	Username string `json:"name"`
-	Password string `json:"password"`
+	User  User  `json:"user"`
+	Token Token `json:"token"`
+}
+
+type User struct {
+	ID   int    `json:"id"`
+	Tag  string `json:"tag"`
+	Name string `json:"name"`
+}
+
+type Token struct {
+	Refresh   string `json:"refresh"`
+	ExpiresIn int    `json:"expiresIn"`
+	Type      string `json:"type"`
 }

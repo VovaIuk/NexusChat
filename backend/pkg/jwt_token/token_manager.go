@@ -83,3 +83,7 @@ func (manager *JWTManager) ParseToken(tokenStr string) (*Claims, error) {
 
 	return claims, nil
 }
+
+func (manager *JWTManager) GetExpiresInSeconds() int {
+	return int(manager.ExpressIn.Seconds())
+}
