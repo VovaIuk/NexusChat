@@ -264,6 +264,57 @@
           }
         }
       }
+    },
+    "/v1/chats/headers": {
+      "get": {
+        "summary": "Получить заголовки чатов с последними сообщениями",
+        "description": "Возвращает список заголовков всех чатов пользователя с предпросмотром последнего сообщения. ID пользователя извлекается из JWT токена.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "Private"
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "chat_id": {
+                        "type": "integer",
+                        "description": "ID чата",
+                        "example": 42
+                      },
+                      "chat_name": {
+                        "type": "string",
+                        "description": "Имя чата (имя собеседника для личных чатов / название группы для групповых)",
+                        "example": "Александр"
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "Текст сообщения",
+                        "example": "Привет! Как дела?"
+                      },
+                      "time": {
+                        "type": "string",
+                        "description": "Время отправки сообщения",
+                        "example": "15:26"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
