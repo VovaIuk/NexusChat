@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/sirupsen/logrus"
 )
 
 func (p *Pool) CreateUser(ctx context.Context, user domain.User) (*domain.User, error) {
@@ -35,13 +34,11 @@ func (p *Pool) GetUserByTagAndPassword(ctx context.Context, tag string, password
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			logrus.Info("invalid tag")
 			return nil, errors.New("invalid credentials")
 		}
 		return nil, fmt.Errorf("database query failed: %w", err)
 	}
 	if !user.CheckPassword(password) {
-		logrus.Info("invalid password")
 		return nil, errors.New("invalid credentials")
 	}
 
