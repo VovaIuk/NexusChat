@@ -1,8 +1,8 @@
 package login_user
 
 type Input struct {
-	Usertag  string `form:"tag"`
-	Password string `form:"password"`
+	Usertag  string `json:"tag"`
+	Password string `json:"password"`
 }
 
 type Output struct {
