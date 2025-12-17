@@ -1,6 +1,7 @@
 package httpcontroller
 
 import (
+	"backend/internal/chat/get_chatheaders"
 	"backend/internal/chat/get_chathistory"
 	"backend/internal/middleware"
 	"backend/internal/user/login_user"
@@ -41,6 +42,7 @@ func Router(ws *wsserver.WsServer) http.Handler {
 	apiV1Mux.HandleFunc("/registration", register_user.HTTP_V1)
 
 	privateMux.HandleFunc("/chats/{id}/history", get_chathistory.HTTP_V1)
+	privateMux.HandleFunc("/chats/headers", get_chatheaders.HTTP_V1)
 
 	privateHandler := middleware.AuthMiddleware()(privateMux)
 	apiV1Mux.Handle("/private/", http.StripPrefix("/private", privateHandler))
