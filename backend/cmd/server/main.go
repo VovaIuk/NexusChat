@@ -3,6 +3,7 @@ package main
 import (
 	"backend/config"
 	"backend/internal/adapter/postgres"
+	"backend/internal/chat/get_chathistory"
 	httpcontroller "backend/internal/controller/http"
 	"backend/internal/middleware"
 	"backend/internal/user/login_user"
@@ -44,6 +45,8 @@ func AppRun(ctx context.Context, c config.Config) error {
 
 	login_user.New(pgPool, jwtManager)
 	register_user.New(pgPool)
+
+	get_chathistory.New(pgPool, jwtManager)
 
 	router := httpcontroller.Router(wsServer)
 	server := httpserver.New(router, c.HTTP)

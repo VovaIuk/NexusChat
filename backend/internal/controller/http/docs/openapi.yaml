@@ -133,7 +133,7 @@ paths:
                         type: string
                         example: "Bearer"
   
-  /v1/chats/{id}/history:
+  /v1/private/chats/{id}/history:
     get:
       summary: Получить историю сообщений чата
       description: Возвращает список сообщений в указанном чате
@@ -153,32 +153,35 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: ID сообщения
-                      example: 1
-                    user_id:
-                      type: integer
-                      description: ID пользователя
-                      example: 113
-                    username:
-                      type: string
-                      description: Имя пользователя
-                      example: "alex"
-                    message:
-                      type: string
-                      description: Текст сообщения
-                      example: "Привет! Как дела?"
-                    time:
-                      type: string
-                      description: Время отправки сообщения
-                      example: "15:26"
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: ID сообщения
+                          example: 1
+                        user_id:
+                          type: integer
+                          description: ID пользователя
+                          example: 113
+                        username:
+                          type: string
+                          description: Имя пользователя
+                          example: "alex"
+                        message:
+                          type: string
+                          description: Текст сообщения
+                          example: "Привет! Как дела?"
+                        time:
+                          type: string
+                          description: Время отправки сообщения
+                          example: "15:26"
   
-  /v1/chats/headers:
+  /v1/private/chats/headers:
     get:
       summary: Получить заголовки чатов с последними сообщениями
       description: Возвращает список заголовков всех чатов пользователя с предпросмотром последнего сообщения. ID пользователя извлекается из JWT токена.

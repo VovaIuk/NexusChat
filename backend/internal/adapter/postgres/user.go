@@ -44,3 +44,36 @@ func (p *Pool) GetUserByTagAndPassword(ctx context.Context, tag string, password
 
 	return &user, nil
 }
+
+func (p *Pool) GetUsersByChatID(ctx context.Context, chatID int) (map[int]domain.User, error) {
+	rows, err := p.pool.Query(ctx, `
+		SELECT u.id, u.tag, u.username, u.password
+		FROM users u
+		INNER JOIN user_chat uc ON u.id = uc.user_id
+		WHERE uc.chat_id = $1
+	`, chatID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query users for chat %d: %w", chatID, err)
+	}
+	defer rows.Close()
+
+	usersMap := make(map[int]domain.User)
+	for rows.Next() {
+		var user domain.User
+		if err := rows.Scan(
+			&user.ID,
+			&user.Tag,
+			&user.Username,
+			&user.Password,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan user: %w", err)
+		}
+		usersMap[user.ID] = user
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("row iteration error: %w", err)
+	}
+
+	return usersMap, nil
+}
