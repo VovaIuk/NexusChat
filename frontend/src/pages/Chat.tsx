@@ -77,39 +77,95 @@ function Chat() {
             <input type="text" placeholder="Поиск чатов..."/>
           </div>
 
-          <div className="chats-list">
+                  <div className="chats-list">
             <ChatItem 
-              avatarText='НП' 
-              message='Присылаю много документов, eioiner erngoern ernfero'
-              time='15:33'
-              name='Иван Иванов Иван Иван Иван'
+              avatarText="НП" 
+              message="Присылаю много документов, eioiner erngoern ernfero"
+              time="15:33"
+              name="Наталья Петрова"
               isActive={false}
               isOnline={true}
             />
 
             <ChatItem 
-              avatarText='МП'
-              message='Присылаю документы'
-              time='11:45'
-              name='Дмиттрий Сидоров'
+              avatarText="МП"
+              message="Присылаю документы"
+              time="11:45"
+              name="Максим Попов"
               isActive={true}
+              isOnline={true}
             />
 
             <ChatItem 
-              avatarText='МП'
-              message='Присылаю документы по проекту eee eroreooeri erofnreoin rnefioerno'
-              time='11:45'
-              name='ДмиттрийСидоровАнтонович'
+              avatarText="МП"
+              message="Присылаю документы по проекту eee eroreooeri erofnreoin rnefioerno"
+              time="11:45"
+              name="Михаил Петров"
               isActive={false}
               isOnline={false}
             />
 
             <ChatItem 
-              avatarText='МП'
-              message='Присылаю документы по проекту eee eroreooeri erofnreoin rnefioerno'
-              time='11:45'
-              name='Дмиттрий Сидоров'
+              avatarText="АС"
+              message="Присылаю документы по проекту eee eroreooeri erofnreoin rnefioerno"
+              time="11:45"
+              name="Анна Соколова"
               isOnline={true}
+            />
+
+            {/* Новые чаты */}
+            <ChatItem 
+              avatarText="ЕК"
+              message="Согласовал с юристами — всё ок!"
+              time="10:22"
+              name="Елена Кузнецова"
+              isActive={false}
+              isOnline={true}
+            />
+
+            <ChatItem 
+              avatarText="АВ"
+              message="Можно перенести митинг на завтра?"
+              time="09:15"
+              name="Артём Волков"
+              isActive={false}
+              isOnline={false}
+            />
+
+            <ChatItem 
+              avatarText="ОБ"
+              message="Файлы прикрепил в облако"
+              time="Вчера"
+              name="Оксана Белова"
+              isActive={false}
+              isOnline={true}
+            />
+
+            <ChatItem 
+              avatarText="ИМ"
+              message="Не забудьте подписать NDA"
+              time="Вчера"
+              name="Игорь Морозов"
+              isActive={false}
+              isOnline={false}
+            />
+
+            <ChatItem 
+              avatarText="ТГ"
+              message="Тестовый стенд уже доступен"
+              time="Пн"
+              name="Татьяна Григорьева"
+              isActive={false}
+              isOnline={true}
+            />
+
+            <ChatItem 
+              avatarText="ДР"
+              message="Привет! Ты в офисе?"
+              time="Вс"
+              name="Денис Романов"
+              isActive={false}
+              isOnline={false}
             />
           </div>
         </div>
@@ -128,12 +184,21 @@ function Chat() {
             </div>
           </div>
           <div className="messages-container">
-            {messages.map((message) => (
+              {[
+              { message: "Привет! Как дела?", time: "10:02", IsReceived: true },
+              { message: "Привет! Норм, спасибо. А у тебя?", time: "10:03", IsReceived: false },
+              { message: "Тоже всё ок. Сможешь сегодня прислать ТЗ по новому проекту?", time: "10:04", IsReceived: true },
+              { message: "Да, уже почти готово. Отправлю к обеду.", time: "10:05", IsReceived: false },
+              { message: "Отлично, спасибо!", time: "10:06", IsReceived: true },
+              { message: "Кстати, митинг перенесли на 15:00. Успеешь?", time: "10:08", IsReceived: false },
+              { message: "Да, конечно. Был бы только в офисе к этому времени.", time: "10:10", IsReceived: true },
+            ].map((message, index) => (
               <Message
-              content={message.message}
-              time={message.time}
-              isReceived={message.IsReceived}
-            />
+                key={index}
+                content={message.message}
+                time={message.time}
+                isReceived={message.IsReceived}
+              />
             ))}
           </div>
           <div className="typing-indicator">

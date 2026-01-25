@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 )
 
@@ -15,6 +16,8 @@ const (
 	UserClaimsContextKey contextKey = "user_claims"
 )
 
+const UserClaimsKey = "user_claims"
+
 var jwtManager *jwttoken.JWTManager
 
 func InitAuth(c jwttoken.Config) *jwttoken.JWTManager {
@@ -22,21 +25,19 @@ func InitAuth(c jwttoken.Config) *jwttoken.JWTManager {
 	return jwtManager
 }
 
-func AuthMiddleware() func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
+func AuthMiddleware() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			authHeader := c.Request().Header.Get("Authorization")
 			if authHeader == "" {
 				logrus.Warn("Authorization header is missing")
-				http.Error(w, "Authorization header is required", http.StatusUnauthorized)
-				return
+				return echo.NewHTTPError(http.StatusUnauthorized, "Authorization header is required")
 			}
 
 			tokenParts := strings.Split(authHeader, " ")
 			if len(tokenParts) != 2 || strings.ToLower(tokenParts[0]) != "bearer" {
 				logrus.Warn("Invalid authorization header format")
-				http.Error(w, "Invalid authorization header format", http.StatusUnauthorized)
-				return
+				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid authorization header format")
 			}
 
 			tokenStr := tokenParts[1]
@@ -44,17 +45,15 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 			claims, err := jwtManager.ParseToken(tokenStr)
 			if err != nil {
 				logrus.Warnf("Invalid token: %v", err)
-				http.Error(w, "Invalid or expired token", http.StatusUnauthorized)
-				return
+				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired token")
 			}
 
-			ctx := context.WithValue(r.Context(), UserClaimsContextKey, claims)
-			r = r.WithContext(ctx)
+			c.Set(UserClaimsKey, claims)
 
 			logrus.Infof("Authenticated user: %s (ID: %d)", claims.Username, claims.UserID)
 
-			next.ServeHTTP(w, r)
-		})
+			return next(c)
+		}
 	}
 }
 

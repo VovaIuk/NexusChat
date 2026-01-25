@@ -3,51 +3,64 @@ package httpcontroller
 import (
 	"backend/internal/chat/get_chatheaders"
 	"backend/internal/chat/get_chathistory"
-	"backend/internal/middleware"
+	pkg_middleware "backend/internal/middleware"
 	"backend/internal/user/login_user"
 	"backend/internal/user/register_user"
 	"backend/internal/wsserver"
 	"embed"
-	"io/fs"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
+
+//TODO: переписать на Echo
 
 //go:embed docs
 var docsFS embed.FS
 
 func Router(ws *wsserver.WsServer) http.Handler {
 
-	sub, err := fs.Sub(docsFS, "docs")
-	if err != nil {
-		logrus.Fatal("Failed to create sub FS for docs:", err)
-	}
-	docsSubFS := http.FS(sub)
+	e := echo.New()
 
-	mainMux := http.NewServeMux()
-	apiMux := http.NewServeMux()
-	apiV1Mux := http.NewServeMux()
-	privateMux := http.NewServeMux()
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:5173", "http://localhost:8004"},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+	}))
 
-	mainMux.HandleFunc("/ws", ws.WsHandler)
+	e.Use(middleware.RequestLogger())
+	e.Use(middleware.Recover())
 
-	mainMux.Handle("/api/", http.StripPrefix("/api", apiMux))
+	e.GET("/ws", func(c echo.Context) error {
+		ws.WsHandler(c.Response(), c.Request())
+		return nil
+	})
 
-	apiMux.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(docsSubFS)))
+	e.StaticFS("/api/docs", echo.MustSubFS(docsFS, "docs"))
 
-	apiMux.Handle("/v1/", http.StripPrefix("/v1", apiV1Mux))
+	api := e.Group("/api")
+	v1 := api.Group("/v1")
 
-	apiV1Mux.HandleFunc("/login", login_user.HTTP_V1)
-	apiV1Mux.HandleFunc("/registration", register_user.HTTP_V1)
+	v1.POST("/login", func(c echo.Context) error {
+		login_user.HTTP_V1(c.Response(), c.Request())
+		return nil
+	})
 
-	privateMux.HandleFunc("/chats/{id}/history", get_chathistory.HTTP_V1)
-	privateMux.HandleFunc("/chats/headers", get_chatheaders.HTTP_V1)
+	v1.POST("/registration", func(c echo.Context) error {
+		register_user.HTTP_V1(c.Response(), c.Request())
+		return nil
+	})
 
-	privateHandler := middleware.AuthMiddleware()(privateMux)
-	apiV1Mux.Handle("/private/", http.StripPrefix("/private", privateHandler))
+	private := v1.Group("/private", pkg_middleware.AuthMiddleware())
 
-	handler := middleware.CORSMiddleware([]string{"http://localhost:5173", "http://localhost:8004"})(mainMux)
+	private.GET("/chats/:id/history", func(c echo.Context) error {
+		get_chathistory.HTTP_V1(c.Response(), c.Request())
+		return nil
+	})
+	private.GET("/chats/headers", func(c echo.Context) error {
+		get_chatheaders.HTTP_V1(c.Response(), c.Request())
+		return nil
+	})
 
-	return handler
+	return e
 }
