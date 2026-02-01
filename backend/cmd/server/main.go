@@ -4,8 +4,6 @@ import (
 	"backend/config"
 	"backend/internal/adapter/postgres"
 	"backend/internal/chat/get_chat_messages"
-	"backend/internal/chat/get_chatheaders"
-	"backend/internal/chat/get_chathistory"
 	getchats "backend/internal/chat/get_chats"
 	httpcontroller "backend/internal/controller/http"
 	"backend/internal/user/login_user"
@@ -50,8 +48,6 @@ func AppRun(ctx context.Context, c config.Config) error {
 
 	getchats.New(pgPool)
 	get_chat_messages.New(pgPool)
-	get_chathistory.New(pgPool, jwtManager)
-	get_chatheaders.New(pgPool, jwtManager)
 
 	router := httpcontroller.Router(wsServer, jwtManager)
 	server := httpserver.New(router, c.HTTP)
