@@ -50,6 +50,7 @@ vendor/
 go.work
 server.txt
 tasks.txt
+text.txt
 
 .env
 

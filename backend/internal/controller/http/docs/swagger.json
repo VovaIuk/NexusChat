@@ -198,6 +198,168 @@
         }
       }
     },
+    "/v1/chats": {
+      "get": {
+        "summary": "Получить список чатов",
+        "description": "Возвращает список чатов пользователя с участниками и последними сообщениями. ID пользователя извлекается из JWT токена.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "Private"
+        ],
+        "parameters": [
+          {
+            "name": "limit_messages",
+            "in": "query",
+            "required": false,
+            "description": "Количество последних сообщений в каждом чате (по умолчанию 5)",
+            "schema": {
+              "type": "integer",
+              "default": 5,
+              "example": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "chats"
+                  ],
+                  "properties": {
+                    "chats": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "name",
+                          "users",
+                          "messages"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "ID чата",
+                            "example": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Имя чата",
+                            "example": "Личный чат"
+                          },
+                          "users": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "tag",
+                                "name"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "integer",
+                                  "description": "ID пользователя",
+                                  "example": 1
+                                },
+                                "tag": {
+                                  "type": "string",
+                                  "description": "Тег пользователя",
+                                  "example": "example_user_tag"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "Имя пользователя",
+                                  "example": "alex"
+                                }
+                              }
+                            }
+                          },
+                          "messages": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "user_author",
+                                "message"
+                              ],
+                              "properties": {
+                                "user_author": {
+                                  "type": "object",
+                                  "required": [
+                                    "id",
+                                    "tag",
+                                    "name"
+                                  ],
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer",
+                                      "example": 1
+                                    },
+                                    "tag": {
+                                      "type": "string",
+                                      "example": "example_user_tag"
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "example": "alex"
+                                    }
+                                  }
+                                },
+                                "message": {
+                                  "type": "object",
+                                  "required": [
+                                    "id",
+                                    "text",
+                                    "time"
+                                  ],
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer",
+                                      "description": "ID сообщения",
+                                      "example": 1
+                                    },
+                                    "text": {
+                                      "type": "string",
+                                      "description": "Текст сообщения",
+                                      "example": "Привет! Как дела?"
+                                    },
+                                    "time": {
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "description": "Время отправки сообщения",
+                                      "example": "2025-02-01T15:26:00Z"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные параметры запроса"
+          },
+          "401": {
+            "description": "Не авторизован"
+          }
+        }
+      }
+    },
     "/v1/private/chats/{id}/history": {
       "get": {
         "summary": "Получить историю сообщений чата",

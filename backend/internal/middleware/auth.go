@@ -18,14 +18,9 @@ const (
 
 const UserClaimsKey = "user_claims"
 
-var jwtManager *jwttoken.JWTManager
+//TODO: потом пофикисить логирование
 
-func InitAuth(c jwttoken.Config) *jwttoken.JWTManager {
-	jwtManager = jwttoken.NewJWTManager(c)
-	return jwtManager
-}
-
-func AuthMiddleware() echo.MiddlewareFunc {
+func AuthMiddleware(jwtManager *jwttoken.JWTManager) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			authHeader := c.Request().Header.Get("Authorization")
@@ -48,7 +43,8 @@ func AuthMiddleware() echo.MiddlewareFunc {
 				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired token")
 			}
 
-			c.Set(UserClaimsKey, claims)
+			ctx := context.WithValue(c.Request().Context(), UserClaimsKey, claims)
+			c.SetRequest(c.Request().WithContext(ctx))
 
 			logrus.Infof("Authenticated user: %s (ID: %d)", claims.Username, claims.UserID)
 
@@ -58,6 +54,6 @@ func AuthMiddleware() echo.MiddlewareFunc {
 }
 
 func GetUserClaims(ctx context.Context) (*jwttoken.Claims, bool) {
-	claims, ok := ctx.Value(UserClaimsContextKey).(*jwttoken.Claims)
+	claims, ok := ctx.Value(UserClaimsKey).(*jwttoken.Claims)
 	return claims, ok
 }

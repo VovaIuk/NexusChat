@@ -5,12 +5,13 @@ import (
 	"backend/internal/adapter/postgres"
 	"backend/internal/chat/get_chatheaders"
 	"backend/internal/chat/get_chathistory"
+	getchats "backend/internal/chat/get_chats"
 	httpcontroller "backend/internal/controller/http"
-	"backend/internal/middleware"
 	"backend/internal/user/login_user"
 	"backend/internal/user/register_user"
 	"backend/internal/wsserver"
 	"backend/pkg/httpserver"
+	jwttoken "backend/pkg/jwt_token"
 	"context"
 	"fmt"
 	"net/http"
@@ -39,18 +40,18 @@ func AppRun(ctx context.Context, c config.Config) error {
 		return fmt.Errorf("postgres.New: %w", err)
 	}
 
-	jwtManager := middleware.InitAuth(c.JWT)
-
+	jwtManager := jwttoken.NewJWTManager(c.JWT)
 	wsServer := wsserver.NewWSServers()
 	wsServer.Start()
 
 	login_user.New(pgPool, jwtManager)
 	register_user.New(pgPool)
 
+	getchats.New(pgPool)
 	get_chathistory.New(pgPool, jwtManager)
 	get_chatheaders.New(pgPool, jwtManager)
 
-	router := httpcontroller.Router(wsServer)
+	router := httpcontroller.Router(wsServer, jwtManager)
 	server := httpserver.New(router, c.HTTP)
 
 	go func() {

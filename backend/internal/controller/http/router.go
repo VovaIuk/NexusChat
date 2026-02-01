@@ -3,10 +3,12 @@ package httpcontroller
 import (
 	"backend/internal/chat/get_chatheaders"
 	"backend/internal/chat/get_chathistory"
+	getchats "backend/internal/chat/get_chats"
 	pkg_middleware "backend/internal/middleware"
 	"backend/internal/user/login_user"
 	"backend/internal/user/register_user"
 	"backend/internal/wsserver"
+	jwttoken "backend/pkg/jwt_token"
 	"embed"
 	"net/http"
 
@@ -19,7 +21,7 @@ import (
 //go:embed docs
 var docsFS embed.FS
 
-func Router(ws *wsserver.WsServer) http.Handler {
+func Router(ws *wsserver.WsServer, jwtManager *jwttoken.JWTManager) http.Handler {
 
 	e := echo.New()
 
@@ -28,8 +30,8 @@ func Router(ws *wsserver.WsServer) http.Handler {
 		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 	}))
 
-	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.RequestLogger())
 
 	e.GET("/ws", func(c echo.Context) error {
 		ws.WsHandler(c.Response(), c.Request())
@@ -51,7 +53,10 @@ func Router(ws *wsserver.WsServer) http.Handler {
 		return nil
 	})
 
-	private := v1.Group("/private", pkg_middleware.AuthMiddleware())
+	protected := v1.Group("", pkg_middleware.AuthMiddleware(jwtManager))
+	protected.GET("/chats", getchats.HTTPv1)
+
+	private := v1.Group("/private", pkg_middleware.AuthMiddleware(jwtManager))
 
 	private.GET("/chats/:id/history", func(c echo.Context) error {
 		get_chathistory.HTTP_V1(c.Response(), c.Request())
