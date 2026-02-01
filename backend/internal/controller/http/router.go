@@ -1,6 +1,7 @@
 package httpcontroller
 
 import (
+	"backend/internal/chat/get_chat_messages"
 	"backend/internal/chat/get_chatheaders"
 	"backend/internal/chat/get_chathistory"
 	getchats "backend/internal/chat/get_chats"
@@ -55,6 +56,7 @@ func Router(ws *wsserver.WsServer, jwtManager *jwttoken.JWTManager) http.Handler
 
 	protected := v1.Group("", pkg_middleware.AuthMiddleware(jwtManager))
 	protected.GET("/chats", getchats.HTTPv1)
+	protected.GET("/chats/:id/messages", get_chat_messages.HTTPv1)
 
 	private := v1.Group("/private", pkg_middleware.AuthMiddleware(jwtManager))
 

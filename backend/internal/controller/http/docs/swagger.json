@@ -360,6 +360,139 @@
         }
       }
     },
+    "/v1/chats/{id}/messages": {
+      "get": {
+        "summary": "Получить сообщения чата",
+        "description": "Возвращает список сообщений в указанном чате с пагинацией. ID пользователя извлекается из JWT токена.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "Private"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID чата",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "description": "Количество сообщений для выборки",
+            "schema": {
+              "type": "integer",
+              "example": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Смещение для пагинации (по умолчанию 0)",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "example": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "messages"
+                  ],
+                  "properties": {
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "user_author",
+                          "message"
+                        ],
+                        "properties": {
+                          "user_author": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "tag",
+                              "name"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "ID пользователя-автора",
+                                "example": 1
+                              },
+                              "tag": {
+                                "type": "string",
+                                "description": "Тег пользователя",
+                                "example": "example_user_tag"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Имя пользователя",
+                                "example": "alex"
+                              }
+                            }
+                          },
+                          "message": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "text",
+                              "time"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "ID сообщения",
+                                "example": 1
+                              },
+                              "text": {
+                                "type": "string",
+                                "description": "Текст сообщения",
+                                "example": "Привет! Как дела?"
+                              },
+                              "time": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Время отправки сообщения",
+                                "example": "2025-02-01T15:26:00Z"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные параметры запроса (chat_id, limit, offset)"
+          },
+          "401": {
+            "description": "Не авторизован"
+          }
+        }
+      }
+    },
     "/v1/private/chats/{id}/history": {
       "get": {
         "summary": "Получить историю сообщений чата",

@@ -128,7 +128,7 @@ func (p *Pool) GetChatsMessagesByUserID(ctx context.Context, userID int, limit i
 
 	rows, err := p.pool.Query(ctx, query, userID, limit)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query chat messages: %w", err)
+		return nil, fmt.Errorf("failed to query chats messages: %w", err)
 	}
 	defer rows.Close()
 
@@ -154,5 +154,47 @@ func (p *Pool) GetChatsMessagesByUserID(ctx context.Context, userID int, limit i
 		return nil, fmt.Errorf("row iteration error: %w", err)
 	}
 
+	return messages, nil
+}
+
+func (p *Pool) GetChatMessages(ctx context.Context, chatID, limit, offset int) ([]domain.ChatMessage, error) {
+	query := `
+		SELECT *
+		FROM (
+			SELECT m.user_id, u.tag AS usertag, u.username, m.id AS message_id, m.text, m.time
+			FROM messages m
+			JOIN users u ON u.id = m.user_id
+			WHERE m.chat_id = $1
+			ORDER BY m.time DESC
+			LIMIT $2
+			OFFSET $3
+		) AS last_messages
+		ORDER BY time ASC
+	`
+
+	rows, err := p.pool.Query(ctx, query, chatID, limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query chat messages: %w", err)
+	}
+	messages := make([]domain.ChatMessage, 0)
+	for rows.Next() {
+		var msg domain.ChatMessage
+		msg.ChatID = chatID
+		err := rows.Scan(
+			&msg.UserID,
+			&msg.Usertag,
+			&msg.Username,
+			&msg.MessageID,
+			&msg.Text,
+			&msg.Time,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan chat message row: %w", err)
+		}
+		messages = append(messages, msg)
+	}
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("row iteration error: %w", err)
+	}
 	return messages, nil
 }
