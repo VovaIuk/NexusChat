@@ -6,6 +6,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type PublicUser struct {
+	ID       int    `json:"id"`
+	Tag      string `json:"tag"`
+	Username string `json:"username"`
+}
+
 type User struct {
 	ID       int    `json:"id"`
 	Tag      string `json:"tag"`

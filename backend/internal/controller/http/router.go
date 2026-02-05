@@ -6,6 +6,7 @@ import (
 	pkg_middleware "backend/internal/middleware"
 	"backend/internal/user/login_user"
 	"backend/internal/user/register_user"
+	"backend/internal/user/search_user"
 	"backend/internal/wsserver"
 	jwttoken "backend/pkg/jwt_token"
 	"embed"
@@ -53,6 +54,7 @@ func Router(ws *wsserver.WsServer, jwtManager *jwttoken.JWTManager) http.Handler
 	})
 
 	protected := v1.Group("", pkg_middleware.AuthMiddleware(jwtManager))
+	protected.GET("/users", search_user.HTTPv1)
 	protected.GET("/chats", getchats.HTTPv1)
 	protected.GET("/chats/:id/messages", get_chat_messages.HTTPv1)
 

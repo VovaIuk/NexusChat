@@ -8,6 +8,7 @@ import (
 	httpcontroller "backend/internal/controller/http"
 	"backend/internal/user/login_user"
 	"backend/internal/user/register_user"
+	"backend/internal/user/search_user"
 	"backend/internal/wsserver"
 	"backend/pkg/httpserver"
 	jwttoken "backend/pkg/jwt_token"
@@ -45,6 +46,7 @@ func AppRun(ctx context.Context, c config.Config) error {
 
 	login_user.New(pgPool, jwtManager)
 	register_user.New(pgPool)
+	search_user.New(pgPool)
 
 	getchats.New(pgPool)
 	get_chat_messages.New(pgPool)

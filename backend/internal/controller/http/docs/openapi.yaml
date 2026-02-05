@@ -133,6 +133,65 @@ paths:
                         type: string
                         example: "Bearer"
 
+  /v1/users:
+    get:
+      summary: Поиск пользователей
+      description: Возвращает список пользователей по началу тега. ID текущего пользователя извлекается из JWT токена.
+      security:
+        - bearerAuth: []
+      tags: [Private]
+      parameters:
+        - name: tag
+          in: query
+          required: true
+          description: Тег или часть тега для поиска пользователей
+          schema:
+            type: string
+            example: "example_user"
+        - name: limit
+          in: query
+          required: false
+          description: Максимальное количество пользователей в ответе (по умолчанию 5)
+          schema:
+            type: integer
+            default: 5
+            example: 5
+      responses:
+        "200":
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - users
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - id
+                        - tag
+                        - name
+                      properties:
+                        id:
+                          type: integer
+                          description: ID пользователя
+                          example: 1
+                        tag:
+                          type: string
+                          description: Тег пользователя
+                          example: "example_user_tag"
+                        name:
+                          type: string
+                          description: Имя пользователя
+                          example: "alex"
+        "400":
+          description: Некорректные параметры запроса (tag обязателен, limit — число)
+        "401":
+          description: Не авторизован
+
   /v1/chats:
     get:
       summary: Получить список чатов

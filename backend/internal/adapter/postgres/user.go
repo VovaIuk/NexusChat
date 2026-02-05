@@ -45,35 +45,33 @@ func (p *Pool) GetUserByTagAndPassword(ctx context.Context, tag string, password
 	return &user, nil
 }
 
-func (p *Pool) GetUsersByChatID(ctx context.Context, chatID int) (map[int]domain.User, error) {
-	rows, err := p.pool.Query(ctx, `
-		SELECT u.id, u.tag, u.username, u.password
-		FROM users u
-		INNER JOIN user_chat uc ON u.id = uc.user_id
-		WHERE uc.chat_id = $1
-	`, chatID)
+func (p *Pool) SearchUserByTag(ctx context.Context, tag string, limit int) ([]domain.PublicUser, error) {
+	query := `
+		SELECT id, tag, username FROM users
+		WHERE left(tag, length($1)) = $1
+		ORDER BY length(tag) ASC
+		LIMIT $2
+	`
+
+	rows, err := p.pool.Query(ctx, query, tag, limit)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query users for chat %d: %w", chatID, err)
+		return nil, fmt.Errorf("search users by tag: %w", err)
 	}
 	defer rows.Close()
 
-	usersMap := make(map[int]domain.User)
+	users := make([]domain.PublicUser, 0)
 	for rows.Next() {
-		var user domain.User
-		if err := rows.Scan(
-			&user.ID,
-			&user.Tag,
-			&user.Username,
-			&user.Password,
-		); err != nil {
-			return nil, fmt.Errorf("failed to scan user: %w", err)
+		var user domain.PublicUser
+		err = rows.Scan(&user.ID, &user.Tag, &user.Username)
+		if err != nil {
+			return nil, fmt.Errorf("scan user: %w", err)
 		}
-		usersMap[user.ID] = user
+		users = append(users, user)
 	}
 
-	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("row iteration error: %w", err)
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("iterate rows: %w", rows.Err())
 	}
 
-	return usersMap, nil
+	return users, nil
 }
