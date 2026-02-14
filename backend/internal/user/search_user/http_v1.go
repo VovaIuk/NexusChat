@@ -9,6 +9,8 @@ import (
 
 var usecase *Usecase
 
+//TODO: прописат логику отмены запроса
+
 func HTTPv1(c echo.Context) error {
 	var input Input
 	input, err := parseQueryParamsForInput(c, input)
