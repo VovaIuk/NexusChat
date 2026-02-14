@@ -1,0 +1,92 @@
+.chat-input-wrap{
+    padding: 10px 12px;
+    border-top: 1px solid var(--color-input-border-top);
+    background: var(--color-input-wrap-background);
+  }
+  
+  .chat-input-row{
+    display: flex;
+    gap: 10px;
+  }
+  .chat-input-row:not(.chat-input-row--has-text) {
+    gap: 0;
+  }
+  
+  .chat-input {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 10px;
+    border: 1px solid var(--color-input-border);
+    border-radius: 14px;
+    background: var(--color-input-background);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--color-text);
+    outline: none;
+    min-height: 38px;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, flex 0.12s ease-out;
+  }
+  
+  .chat-input::placeholder {
+    color: var(--color-input-placeholder);
+  }
+  
+  .chat-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(63, 193, 176, 0.12);
+  }
+  
+  .chat-send {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 0;
+    min-width: 0;
+    height: 40px;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    background: transparent;
+    color: var(--color-accent);
+    border: 1px solid transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateX(-16px);
+    pointer-events: none;
+    transition: width 0.12s ease-out, min-width 0.12s ease-out,
+      opacity 0.12s ease-out, transform 0.12s ease-out,
+      border-color 0.2s, background 0.2s, color 0.2s;
+    flex-shrink: 0;
+    font-family: inherit;
+  }
+  
+  .chat-send:hover:not(:disabled) {
+    background: rgba(63, 193, 176, 0.1);
+  }
+  
+  .chat-input-row--has-text .chat-send {
+    width: 40px;
+    min-width: 40px;
+    opacity: 1;
+    transform: translateX(0);
+    border-color: var(--color-accent);
+    pointer-events: auto;
+  }
+  
+  .chat-send:active:not(:disabled) {
+    transform: translateX(0) scale(0.98);
+  }
+  
+  .chat-input-row--has-text .chat-send:active:not(:disabled) {
+    transform: translateX(0) scale(0.98);
+  }
+  
+  .chat-send:disabled {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+  
+  .chat-input-row--has-text .chat-send:disabled {
+    opacity: 0.5;
+  }

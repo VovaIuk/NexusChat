@@ -1,0 +1,17 @@
+.theme-provider[data-theme="light"]{
+    --color-view-bg: #18191d;
+    --color-input-border-top: #33393f;
+    --color-input-wrap-background: #282e33;
+    --color-input-border: #2a2f33;
+    --color-input-background: #33393f;
+    --color-accent: #3fc1b0;
+    --color-text: #f5f5f5;
+    --color-input-placeholder: #9ba2a0;
+    --avatar-bg: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    --color-bubble-own: #2a2f33;
+    --color-bubble-other: #33393f;
+    --color-message-time: #7d7d7d;
+    --color-list-item-bg: transparent;
+    --color-list-item-bg-active: #2cc2b5;
+    --color-list-item-text-secondary: #9ba2a0;
+}
