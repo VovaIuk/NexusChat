@@ -16,8 +16,6 @@ const (
 	UserClaimsContextKey contextKey = "user_claims"
 )
 
-const UserClaimsKey = "user_claims"
-
 //TODO: потом пофикисить логирование
 
 func AuthMiddleware(jwtManager *jwttoken.JWTManager) echo.MiddlewareFunc {
@@ -43,7 +41,7 @@ func AuthMiddleware(jwtManager *jwttoken.JWTManager) echo.MiddlewareFunc {
 				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired token")
 			}
 
-			ctx := context.WithValue(c.Request().Context(), UserClaimsKey, claims)
+			ctx := context.WithValue(c.Request().Context(), UserClaimsContextKey, claims)
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			logrus.Infof("Authenticated user: %s (ID: %d)", claims.Username, claims.UserID)
@@ -54,6 +52,6 @@ func AuthMiddleware(jwtManager *jwttoken.JWTManager) echo.MiddlewareFunc {
 }
 
 func GetUserClaims(ctx context.Context) (*jwttoken.Claims, bool) {
-	claims, ok := ctx.Value(UserClaimsKey).(*jwttoken.Claims)
+	claims, ok := ctx.Value(UserClaimsContextKey).(*jwttoken.Claims)
 	return claims, ok
 }

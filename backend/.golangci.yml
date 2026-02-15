@@ -1,0 +1,22 @@
+version: "2"
+
+issues:
+  max-same-issues: 0
+  max-issues-per-linter: 0
+  exclude-dirs:
+    - vendor
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - bodyclose
+  settings:
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+    errcheck:
+      check-type-assertions: true

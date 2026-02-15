@@ -22,7 +22,7 @@ func (p *Pool) GetChatsMembersByUserID(ctx context.Context, userID int) (map[int
 	members := make(map[int][]domain.ChatMember, 0)
 	for rows.Next() {
 		var member domain.ChatMember
-		err := rows.Scan(&member.ChatID, &member.UserID, &member.Usertag, &member.Username)
+		err = rows.Scan(&member.ChatID, &member.UserID, &member.Usertag, &member.Username)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan chat member row: %w", err)
 		}
@@ -65,7 +65,7 @@ func (p *Pool) GetChatsMessagesByUserID(ctx context.Context, userID int, limit i
 	messages := make(map[int][]domain.ChatMessage, 0)
 	for rows.Next() {
 		var msg domain.ChatMessage
-		err := rows.Scan(
+		err = rows.Scan(
 			&msg.ChatID,
 			&msg.UserID,
 			&msg.Usertag,
@@ -110,7 +110,7 @@ func (p *Pool) GetChatMessages(ctx context.Context, chatID, limit, offset int) (
 	for rows.Next() {
 		var msg domain.ChatMessage
 		msg.ChatID = chatID
-		err := rows.Scan(
+		err = rows.Scan(
 			&msg.UserID,
 			&msg.Usertag,
 			&msg.Username,

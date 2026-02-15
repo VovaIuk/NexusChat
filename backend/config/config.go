@@ -28,7 +28,7 @@ func InitConfig() (Config, error) {
 
 	var cfg Config
 	if err := envconfig.Process("", &cfg); err != nil {
-		return Config{}, fmt.Errorf("failed to load config: %v", err)
+		return Config{}, fmt.Errorf("failed to load config: %w", err)
 	}
 
 	return cfg, nil

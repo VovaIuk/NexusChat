@@ -45,7 +45,9 @@ func (ws *WsServer) Close() {
 			time.Now().Add(5*time.Second)); err != nil {
 			logrus.Warnf("Error sending close message: %v", err)
 		}
-		conn.Close()
+		if err := conn.Close(); err != nil {
+			logrus.Errorf("Error closing connection: %v", err)
+		}
 	}
 
 	ws.clients = make(map[*websocket.Conn]struct{})

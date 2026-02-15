@@ -9,7 +9,7 @@ import (
 )
 
 type Config struct {
-	DB_URL string `envconfig:"POSTGRES_URL"     required:"true"`
+	DatabaseURL string `envconfig:"POSTGRES_URL"     required:"true"`
 }
 
 type Pool struct {
@@ -17,7 +17,7 @@ type Pool struct {
 }
 
 func New(ctx context.Context, c Config) (*Pool, error) {
-	poolConfig, err := pgxpool.ParseConfig(c.DB_URL)
+	poolConfig, err := pgxpool.ParseConfig(c.DatabaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("parse config from URL: %w", err)
 	}

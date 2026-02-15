@@ -13,6 +13,7 @@ import (
 	"backend/pkg/httpserver"
 	jwttoken "backend/pkg/jwt_token"
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os/signal"
@@ -55,7 +56,7 @@ func AppRun(ctx context.Context, c config.Config) error {
 	server := httpserver.New(router, c.HTTP)
 
 	go func() {
-		if err := server.Start(); err != nil && err != http.ErrServerClosed {
+		if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logrus.Errorf("Server failed: %v", err)
 		}
 	}()

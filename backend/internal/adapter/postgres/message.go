@@ -10,9 +10,9 @@ func Start() {
 
 }
 
-func (p *Pool) GetMessagesByChatID(ctx context.Context, chatId int) ([]domain.Message, error) {
-	var messages []domain.Message = make([]domain.Message, 0)
-	rows, err := p.pool.Query(ctx, `SELECT id, user_id, chat_id, text, time FROM messages WHERE chat_id = $1 ORDER BY time ASC`, chatId)
+func (p *Pool) GetMessagesByChatID(ctx context.Context, chatID int) ([]domain.Message, error) {
+	messages := make([]domain.Message, 0)
+	rows, err := p.pool.Query(ctx, `SELECT id, user_id, chat_id, text, time FROM messages WHERE chat_id = $1 ORDER BY time ASC`, chatID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query messages: %w", err)
 	}
@@ -20,7 +20,7 @@ func (p *Pool) GetMessagesByChatID(ctx context.Context, chatId int) ([]domain.Me
 
 	for rows.Next() {
 		var msg domain.Message
-		err := rows.Scan(&msg.ID, &msg.UserID, &msg.ChatID, &msg.Text, &msg.Time)
+		err = rows.Scan(&msg.ID, &msg.UserID, &msg.ChatID, &msg.Text, &msg.Time)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan message row: %w", err)
 		}
