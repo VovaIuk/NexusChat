@@ -39,6 +39,7 @@ func HTTPv1(c echo.Context) error {
 	return c.JSON(http.StatusOK, output)
 }
 
+// TODO: добавить проверку на валидацию query парметров
 func parseInput(c echo.Context, input Input) (Input, error) {
 	id := c.Param("id")
 	if id == "" {
@@ -60,15 +61,16 @@ func parseInput(c echo.Context, input Input) (Input, error) {
 	}
 	input.Limit = limit
 
-	offsetStr := c.QueryParam("offset")
-	if offsetStr == "" {
-		offsetStr = "0"
+	beforeMessageIDStr := c.QueryParam("before_message_id")
+	if beforeMessageIDStr == "" {
+		input.BeforeMessageID = nil
+	} else {
+		beforeMessageID, err := strconv.Atoi(beforeMessageIDStr)
+		if err != nil {
+			return input, echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid before_message_id: %v", err))
+		}
+		input.BeforeMessageID = &beforeMessageID
 	}
-	offset, err := strconv.Atoi(offsetStr)
-	if err != nil {
-		return input, echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid offset: %v", err))
-	}
-	input.Offset = offset
 
 	return input, nil
 }

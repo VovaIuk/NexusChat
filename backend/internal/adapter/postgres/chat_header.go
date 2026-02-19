@@ -4,6 +4,8 @@ import (
 	"backend/internal/domain"
 	"context"
 	"fmt"
+
+	"github.com/jackc/pgx/v5"
 )
 
 func (p *Pool) GetChatsMembersByUserID(ctx context.Context, userID int) (map[int][]domain.ChatMember, error) {
@@ -87,8 +89,31 @@ func (p *Pool) GetChatsMessagesByUserID(ctx context.Context, userID int, limit i
 	return messages, nil
 }
 
-func (p *Pool) GetChatMessages(ctx context.Context, chatID, limit, offset int) ([]domain.ChatMessage, error) {
-	query := `
+func (p *Pool) GetChatMessages(ctx context.Context, chatID, limit int, beforeMessageID *int) ([]domain.ChatMessage, error) {
+	var rows pgx.Rows
+	var err error
+
+	if beforeMessageID != nil {
+		query := `
+		SELECT *
+		FROM (
+			SELECT m.user_id, u.tag AS usertag, u.username, m.id AS message_id, m.text, m.time
+			FROM messages m
+			JOIN users u ON u.id = m.user_id
+			JOIN messages cursor ON cursor.id = $1 AND cursor.chat_id = $2
+			WHERE m.chat_id = $2 AND m.time < cursor.time
+			ORDER BY m.time DESC
+			LIMIT $3
+		) AS last_messages
+		ORDER BY time ASC
+		`
+
+		rows, err = p.pool.Query(ctx, query, *beforeMessageID, chatID, limit)
+		if err != nil {
+			return nil, fmt.Errorf("failed to query chat messages: %w", err)
+		}
+	} else {
+		query := `
 		SELECT *
 		FROM (
 			SELECT m.user_id, u.tag AS usertag, u.username, m.id AS message_id, m.text, m.time
@@ -97,15 +122,17 @@ func (p *Pool) GetChatMessages(ctx context.Context, chatID, limit, offset int) (
 			WHERE m.chat_id = $1
 			ORDER BY m.time DESC
 			LIMIT $2
-			OFFSET $3
 		) AS last_messages
 		ORDER BY time ASC
-	`
+		`
 
-	rows, err := p.pool.Query(ctx, query, chatID, limit, offset)
-	if err != nil {
-		return nil, fmt.Errorf("failed to query chat messages: %w", err)
+		rows, err = p.pool.Query(ctx, query, chatID, limit)
+		if err != nil {
+			return nil, fmt.Errorf("failed to query chat messages: %w", err)
+		}
 	}
+	defer rows.Close()
+
 	messages := make([]domain.ChatMessage, 0)
 	for rows.Next() {
 		var msg domain.ChatMessage
@@ -123,7 +150,7 @@ func (p *Pool) GetChatMessages(ctx context.Context, chatID, limit, offset int) (
 		}
 		messages = append(messages, msg)
 	}
-	if rows.Err() != nil {
+	if err = rows.Err(); err != nil {
 		return nil, fmt.Errorf("row iteration error: %w", err)
 	}
 	return messages, nil

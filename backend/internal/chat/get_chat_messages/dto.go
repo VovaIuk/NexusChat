@@ -3,10 +3,10 @@ package get_chat_messages
 import "time"
 
 type Input struct {
-	UserID int // jwt token для провекри принадлежности к чату
-	ChatID int // url path param
-	Limit  int
-	Offset int
+	UserID          int // jwt token для провекри принадлежности к чату
+	ChatID          int // url path param
+	BeforeMessageID *int
+	Limit           int
 }
 
 type Output struct {

@@ -7,7 +7,7 @@ import (
 )
 
 type Postgres interface {
-	GetChatMessages(ctx context.Context, chatID, limit, offset int) ([]domain.ChatMessage, error)
+	GetChatMessages(ctx context.Context, chatID, limit int, beforeMessageID *int) ([]domain.ChatMessage, error)
 }
 
 type Usecase struct {
@@ -25,7 +25,7 @@ func New(postgres *postgres.Pool) *Usecase {
 //TODO: написать метод для проверки принадлежности пользователя к чату
 
 func (u *Usecase) GetChatMessages(ctx context.Context, input Input) (Output, error) {
-	messages, err := u.postgres.GetChatMessages(ctx, input.ChatID, input.Limit, input.Offset)
+	messages, err := u.postgres.GetChatMessages(ctx, input.ChatID, input.Limit, input.BeforeMessageID)
 	if err != nil {
 		return Output{}, err
 	}

@@ -482,10 +482,10 @@
             }
           },
           {
-            "name": "offset",
+            "name": "before_message_id",
             "in": "query",
             "required": false,
-            "description": "Смещение для пагинации (по умолчанию 0)",
+            "description": "ID сообщения-курсора для пагинации. Возвращаются сообщения **старше** этого (подгрузка истории вверх).\nНе передавать или передать 0 — первая загрузка (последние сообщения чата).\n",
             "schema": {
               "type": "integer",
               "default": 0,
@@ -573,7 +573,7 @@
             }
           },
           "400": {
-            "description": "Некорректные параметры запроса (chat_id, limit, offset)"
+            "description": "Некорректные параметры запроса (chat_id, limit, before_message_id)"
           },
           "401": {
             "description": "Не авторизован"

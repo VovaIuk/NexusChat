@@ -328,10 +328,12 @@ paths:
           schema:
             type: integer
             example: 20
-        - name: offset
+        - name: before_message_id
           in: query
           required: false
-          description: Смещение для пагинации (по умолчанию 0)
+          description: |
+            ID сообщения-курсора для пагинации. Возвращаются сообщения **старше** этого (подгрузка истории вверх).
+            Не передавать или передать 0 — первая загрузка (последние сообщения чата).
           schema:
             type: integer
             default: 0
@@ -394,7 +396,7 @@ paths:
                               description: Время отправки сообщения
                               example: "2025-02-01T15:26:00Z"
         "400":
-          description: Некорректные параметры запроса (chat_id, limit, offset)
+          description: Некорректные параметры запроса (chat_id, limit, before_message_id)
         "401":
           description: Не авторизован
   
