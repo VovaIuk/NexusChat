@@ -12,6 +12,7 @@ import (
 	"backend/internal/wsserver"
 	"backend/pkg/httpserver"
 	jwttoken "backend/pkg/jwt_token"
+	"backend/pkg/logger"
 	"context"
 	"errors"
 	"fmt"
@@ -29,6 +30,8 @@ func main() {
 		panic(err)
 	}
 
+	logger.Init(c.Logger)
+
 	err = AppRun(context.Background(), c)
 	if err != nil {
 		panic(err)
@@ -42,7 +45,7 @@ func AppRun(ctx context.Context, c config.Config) error {
 	}
 
 	jwtManager := jwttoken.NewJWTManager(c.JWT)
-	wsServer := wsserver.NewWSServers()
+	wsServer := wsserver.New(pgPool, jwtManager)
 	wsServer.Start()
 
 	login_user.New(pgPool, jwtManager)

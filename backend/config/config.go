@@ -4,6 +4,7 @@ import (
 	"backend/internal/adapter/postgres"
 	"backend/pkg/httpserver"
 	jwttoken "backend/pkg/jwt_token"
+	"backend/pkg/logger"
 	"fmt"
 
 	"github.com/joho/godotenv"
@@ -20,6 +21,7 @@ type Config struct {
 	HTTP     httpserver.Config
 	JWT      jwttoken.Config
 	Postgres postgres.Config
+	Logger   logger.Config
 }
 
 func InitConfig() (Config, error) {

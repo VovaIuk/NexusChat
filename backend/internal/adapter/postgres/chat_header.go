@@ -155,3 +155,28 @@ func (p *Pool) GetChatMessages(ctx context.Context, chatID, limit int, beforeMes
 	}
 	return messages, nil
 }
+
+func (p *Pool) GetChatsIDByUserID(ctx context.Context, userID int) ([]int, error) {
+	query := `
+		SELECT chat_id FROM user_chat
+		WHERE user_id = $1
+	`
+	rows, err := p.pool.Query(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query user chat ids: %w", err)
+	}
+	defer rows.Close()
+
+	ids := make([]int, 0)
+	for rows.Next() {
+		var id int
+		if err = rows.Scan(&id); err != nil {
+			return nil, fmt.Errorf("failed to scan user chat ids: %w", err)
+		}
+		ids = append(ids, id)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("row iteration error: %w", err)
+	}
+	return ids, nil
+}

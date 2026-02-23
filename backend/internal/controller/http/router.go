@@ -34,7 +34,7 @@ func Router(ws *wsserver.WsServer, jwtManager *jwttoken.JWTManager) http.Handler
 	e.Use(middleware.RequestLogger())
 
 	e.GET("/ws", func(c echo.Context) error {
-		ws.WsHandler(c.Response(), c.Request())
+		ws.Handler(c.Response(), c.Request())
 		return nil
 	})
 

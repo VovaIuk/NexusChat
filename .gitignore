@@ -54,3 +54,4 @@ text.txt
 
 .env
 /frontend2
+conn.go

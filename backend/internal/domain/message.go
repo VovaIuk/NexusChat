@@ -9,3 +9,19 @@ type Message struct {
 	Text   string    `json:"text"`
 	Time   time.Time `json:"time"`
 }
+
+type MessageCreate struct {
+	UserID int
+	ChatID int
+	Text   string
+	Time   time.Time
+}
+
+func NewMessageCreate(userID, chatID int, text string, time time.Time) MessageCreate {
+	return MessageCreate{
+		UserID: userID,
+		ChatID: chatID,
+		Text:   text,
+		Time:   time,
+	}
+}
