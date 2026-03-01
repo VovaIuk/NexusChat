@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	pkg_middleware "backend/internal/middleware"
+	pkg_middleware "backend/pkg/middleware"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
