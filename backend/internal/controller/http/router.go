@@ -26,7 +26,7 @@ func Router(ws *wsserver.WsServer, jwtManager *jwttoken.JWTManager) http.Handler
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:5173", "http://localhost:8004"},
+		AllowOrigins: []string{"http://localhost:5173", "http://localhost:8004", "http://xn----7sbbozvcgr0a7c4b.xn--p1ai:5173", "http://xn----7sbbozvcgr0a7c4b.xn--p1ai:8004"},
 		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 	}))
 
