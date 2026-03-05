@@ -4,10 +4,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://localhost:8003/api
-    description: Локальный сервер для разработки
-  - url: http://192.168.0.15:8003/api
-    description: IP ноутбука MAG
+  - url: /api
 
 paths:
   /v1/test:
