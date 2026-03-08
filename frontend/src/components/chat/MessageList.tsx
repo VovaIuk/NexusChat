@@ -1,4 +1,5 @@
 import type { Message } from "../../types/chat";
+import { useUser } from "../../contexts/UserContext";
 import {
   MessageOwnWithTail,
   MessageOwnWithoutTail,
@@ -7,23 +8,41 @@ import {
 } from "./message";
 import "./message/message.css";
 
-const exampleMessageOwn: Message = {
-  user_author: { id: 1, tag: "me", name: "Я" },
-  message: { id: 1, text: "Привет! Как дела? ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttterrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrtttttttttttttt", time: "12:00" },
-};
+interface MessageListProps {
+  messages: Message[];
+}
 
-const exampleMessageOther: Message = {
-  user_author: { id: 2, tag: "friend", name: "Друг" },
-  message: { id: 2, text: "Привет! Всё отлично.", time: "12:01" },
-};
-
-export default function MessageList() {
+export default function MessageList({ messages }: MessageListProps) {
+  const { user } = useUser();
+  const currentUserId = user?.id;
   return (
     <div className="chat-messages-wrapper">
-      <MessageOtherWithoutTail message={exampleMessageOther}/>
-      <MessageOtherWithTail message={exampleMessageOther}/>
-      <MessageOwnWithoutTail message={exampleMessageOwn}/>
-      <MessageOwnWithTail message={exampleMessageOwn}/>
+      {messages.map((message, index) => {
+        const isOwn = message.user_author.id === currentUserId;
+        const nextMessage = messages[index + 1];
+        const timeDiffMs =
+          nextMessage != null
+            ? new Date(nextMessage.message.time).getTime() -
+              new Date(message.message.time).getTime()
+            : 0;
+        const hasTail =
+          nextMessage == null ||
+          nextMessage.user_author.id !== message.user_author.id ||
+          timeDiffMs > 2 * 60 * 1000;
+
+        if (isOwn) {
+          return hasTail ? (
+            <MessageOwnWithTail key={message.message.id} message={message} />
+          ) : (
+            <MessageOwnWithoutTail key={message.message.id} message={message} />
+          );
+        }
+        return hasTail ? (
+          <MessageOtherWithTail key={message.message.id} message={message} />
+        ) : (
+          <MessageOtherWithoutTail key={message.message.id} message={message} />
+        );
+      })}
     </div>
   );
 }

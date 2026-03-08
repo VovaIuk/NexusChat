@@ -62,7 +62,7 @@ func parseInput(c echo.Context, input Input) (Input, error) {
 	input.Limit = limit
 
 	beforeMessageIDStr := c.QueryParam("before_message_id")
-	if beforeMessageIDStr == "" {
+	if beforeMessageIDStr == "" || beforeMessageIDStr == "0" {
 		input.BeforeMessageID = nil
 	} else {
 		beforeMessageID, err := strconv.Atoi(beforeMessageIDStr)

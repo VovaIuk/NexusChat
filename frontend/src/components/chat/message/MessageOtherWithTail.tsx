@@ -1,4 +1,5 @@
 import type { Message } from "../../../types/chat";
+import { formatMessageTime } from "../../../utils/formatMessageTime";
 
 interface MessageItemProps {
   message: Message;
@@ -20,7 +21,7 @@ export default function MessageOtherWithTail({
           ))}
           <span className="chat-message-bubble__meta">
             <span className="chat-message-bubble__meta-time">
-              {message.message.time}
+              {formatMessageTime(message.message.time)}
             </span>
           </span>
         </div>

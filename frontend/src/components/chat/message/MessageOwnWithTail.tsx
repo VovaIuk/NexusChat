@@ -1,4 +1,5 @@
 import type { Message } from "../../../types/chat";
+import { formatMessageTime } from "../../../utils/formatMessageTime";
 import CheckmarkIcon from "../CheckmarkIcon";
 
 interface MessageItemProps {
@@ -21,7 +22,7 @@ export default function MessageOwnWithTail({
           ))}
           <span className="chat-message-bubble__meta">
             <span className="chat-message-bubble__meta-time">
-              {message.message.time}
+              {formatMessageTime(message.message.time)}
             </span>
             <CheckmarkIcon />
           </span>
