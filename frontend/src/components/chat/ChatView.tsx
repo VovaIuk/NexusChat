@@ -14,7 +14,7 @@ export default function ChatView() {
       <header className="chat-view__header">
         {selectedChat?.name ?? "Выберите чат"}
       </header>
-      <MessageList messages={selectedChat?.messages ?? []} />
+      <MessageList messages={selectedChat?.messages ?? []} chatId={selectedChat?.id ?? 0}/>
       <MessageInput />
     </div>
   );

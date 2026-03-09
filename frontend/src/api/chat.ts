@@ -1,4 +1,4 @@
-import type {Chat} from "../types/chat";
+import type {Chat, Message} from "../types/chat";
 
 const apiBase = import.meta.env.VITE_API_BASE;
 
@@ -29,4 +29,24 @@ export async function getChats(
     }
   
     return res.json();
+}
+
+export async function getChatMessages(token: string, chatId: number, limit: number, beforeMessageId?: number | null): Promise<{messages: Message[]}> {
+  const params = new URLSearchParams({limit: String(limit) });
+  if (beforeMessageId != null && beforeMessageId > 0){
+    params.set("before_message_id", String(beforeMessageId));
   }
+  const url = `${apiBase}/v1/chats/${chatId}/messages${params.toString() ? `?${params.toString()}` : ""}`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.message ?? "Ошибка загрузки сообщений");
+  }
+  return res.json();
+}
