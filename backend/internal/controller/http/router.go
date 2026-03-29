@@ -34,15 +34,15 @@ func Router(ws *wsserver.WsServer, jwtManager *jwttoken.JWTManager) http.Handler
 	e.Use(middleware.RequestLogger())
 	e.Use(metrics.RequestCounter())
 
-	e.GET("/ws", func(c echo.Context) error {
-		ws.Handler(c.Response(), c.Request())
-		return nil
-	})
-
 	e.StaticFS("/api/docs", echo.MustSubFS(docsFS, "docs"))
 
 	api := e.Group("/api")
 	v1 := api.Group("/v1")
+
+	v1.GET("/ws", func(c echo.Context) error {
+		ws.Handler(c.Response(), c.Request())
+		return nil
+	})
 
 	v1.POST("/login", func(c echo.Context) error {
 		login_user.HTTP_V1(c.Response(), c.Request())

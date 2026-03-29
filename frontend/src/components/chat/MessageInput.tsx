@@ -1,5 +1,7 @@
 import { useState, type SubmitEvent } from 'react'
 import "./messageInput.css"
+import { useSocket } from '../../contexts/SocketContext';
+import { useChat } from '../../contexts/ChatContext';
 
 function SendIcon() {
   return (
@@ -18,12 +20,19 @@ function SendIcon() {
 
 export default function MessageInput() {
   const [text, setText] = useState("");
+  const {sendMessage} = useSocket();
+  const {selectedChatIndex, chats} = useChat();
+
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //TODO: добавить функцию отправки сообщения
+    const trimmed = text.trim();
+    if (!trimmed || selectedChatIndex == null) return;
+    const selectedChat = chats[selectedChatIndex];
+    if (!selectedChat) return;
+    sendMessage(selectedChat.id, trimmed);
     setText("");
-  }
+  };
 
   const hasText = text.trim().length > 0; 
 
@@ -43,7 +52,7 @@ export default function MessageInput() {
         <button
           type="submit"
           className="chat-send"
-          disabled={false}
+          disabled={!hasText || selectedChatIndex == null}
         >
           <SendIcon />
         </button>

@@ -98,6 +98,7 @@ func (ws *WsServer) readFromClient(conn *websocket.Conn) {
 			}
 			logrus.Info("succses auth")
 		case TypeChatMessage:
+			logrus.Info("Start process get chat message")
 			ws.mutex.RLock()
 			client := ws.connections[conn]
 			ws.mutex.RUnlock()
@@ -119,7 +120,10 @@ func (ws *WsServer) readFromClient(conn *websocket.Conn) {
 				Text:     data.Text,
 				Time:     time.Now(),
 			}
+			logrus.Infof("broadcast message: %v", broadcastMessage)
 			ws.broadcast <- &broadcastMessage
+		default:
+			logrus.Info("Websoket default msg")
 		}
 	}
 	ws.mutex.Lock()

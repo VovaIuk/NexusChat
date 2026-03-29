@@ -6,7 +6,7 @@ info:
 
 servers:
   production:
-    url: ws://localhost:8000/ws
+    url: ws://localhost:8000/api/v1/ws
     protocol: ws
     description: Production WebSocket server
 

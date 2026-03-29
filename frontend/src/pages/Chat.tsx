@@ -6,6 +6,7 @@ import ChatView from '../components/chat/ChatView';
 import ChatSidebar from '../components/chat/sidebar/ChatSidebar';
 import { ChatProvider } from '../contexts/ChatContext';
 import { UserProvider } from '../contexts/UserContext';
+import { SocketProvider } from '../contexts/SocketContext';
 
 export default function Chat() {
   useEffect(() => {
@@ -23,12 +24,14 @@ export default function Chat() {
   return (
     <UserProvider>
       <ChatProvider>
-        <div className="theme-provider" data-theme="light">
-          <div className="chat-page">
-            <ChatSidebar />
-            <ChatView />
+        <SocketProvider>
+          <div className="theme-provider" data-theme="light">
+            <div className="chat-page">
+              <ChatSidebar />
+              <ChatView />
+            </div>
           </div>
-        </div>
+        </SocketProvider>
       </ChatProvider>
     </UserProvider>
   );
