@@ -6,14 +6,16 @@ import "../message/message.css";
 
 interface MessageItemProps {
   message: Message;
+  animate: boolean;
 }
 
 export default function MessageOtherWithoutTail({
   message,
+  animate=false,
 }: MessageItemProps) {
   return (
     <div className="chat-message">
-      <div className="chat-message-row">
+      <div className={`chat-message-row ${animate ? "chat-message-row--animate" : ""}`}>
         <div className="chat-message__spacer"></div>
         <div className="chat-message-bubble chat-message-bubble--other chat-message-bubble--no-tail">
           {message.message.text.split("\n").map((line, i) => (

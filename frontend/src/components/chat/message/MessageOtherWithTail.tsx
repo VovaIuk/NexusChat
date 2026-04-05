@@ -3,14 +3,16 @@ import { formatMessageTime } from "../../../utils/formatMessageTime";
 
 interface MessageItemProps {
   message: Message;
+  animate: boolean;
 }
 
 export default function MessageOtherWithTail({
   message,
+  animate=false,
 }: MessageItemProps) {
   return (
     <div className="chat-message chat-message--separator">
-      <div className="chat-message-row">
+      <div className={`chat-message-row ${animate ? "chat-message-row--animate" : ""}`}>
         <div className="chat-message__avatar"></div>
         <div className="chat-message-bubble chat-message-bubble--other chat-message-bubble--tail">
           {message.message.text.split("\n").map((line, i) => (

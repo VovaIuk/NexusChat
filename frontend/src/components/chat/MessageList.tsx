@@ -22,6 +22,29 @@ export default function MessageList({ messages, chatId }: MessageListProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const firstMessageRef = useRef<HTMLDivElement>(null);
 
+  const prevChatIdRef = useRef(chatId);
+  const prevMessagesRef = useRef<Message[]>([]);
+
+  if (prevChatIdRef.current !== chatId) {
+    prevChatIdRef.current = chatId;
+    prevMessagesRef.current = [];
+  }
+
+  const prev = prevMessagesRef.current;
+
+  let animateIds: ReadonlySet<number> = new Set();
+  if (prev.length > 0 && messages.length > prev.length) {
+    const isAppendOnly = prev.every(
+      (m, i) => m.message.id === messages[i]?.message.id
+    );
+    if (isAppendOnly) {
+      const appended = messages.slice(prev.length);
+      animateIds = new Set(appended.map((m) => m.message.id));
+    }
+  }
+
+  prevMessagesRef.current = messages;
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     const first = firstMessageRef.current;
@@ -63,18 +86,36 @@ export default function MessageList({ messages, chatId }: MessageListProps) {
           nextMessage.user_author.id !== message.user_author.id ||
           timeDiffMs > 2 * 60 * 1000;
 
+        const shouldAnimate = animateIds.has(message.message.id);
+
         let content;
         if (isOwn) {
           content = hasTail ? (
-            <MessageOwnWithTail key={message.message.id} message={message} />
+            <MessageOwnWithTail
+              key={message.message.id}
+              message={message}
+              animate={shouldAnimate}
+            />
           ) : (
-            <MessageOwnWithoutTail key={message.message.id} message={message} />
+            <MessageOwnWithoutTail
+              key={message.message.id}
+              message={message}
+              animate={shouldAnimate}
+            />
           );
         } else {
           content = hasTail ? (
-            <MessageOtherWithTail key={message.message.id} message={message} />
+            <MessageOtherWithTail
+              key={message.message.id}
+              message={message}
+              animate={shouldAnimate}
+            />
           ) : (
-            <MessageOtherWithoutTail key={message.message.id} message={message} />
+            <MessageOtherWithoutTail
+              key={message.message.id}
+              message={message}
+              animate={shouldAnimate}
+            />
           );
         }
 
