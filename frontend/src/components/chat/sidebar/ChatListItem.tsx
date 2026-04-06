@@ -1,5 +1,6 @@
 import "./chatList.css";
 import CheckmarkIcon from "../CheckmarkIcon";
+import { formatMessageTime } from "../../../utils/formatMessageTime";
 
 export interface ChatListItemProps {
   isSelected: boolean;
@@ -52,7 +53,7 @@ export function ChatListItem({
                 <CheckmarkIcon />
               </span>
             )}
-            {time && <span className="chat-list-item__time">{time}</span>}
+            {time && <span className="chat-list-item__time">{formatMessageTime(time)}</span>}
           </div>
         </div>
         <span className="chat-list-item__preview">{lastMessage}</span>

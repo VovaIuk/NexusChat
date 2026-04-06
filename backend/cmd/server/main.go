@@ -6,6 +6,7 @@ import (
 	"backend/internal/chat/get_chat_messages"
 	getchats "backend/internal/chat/get_chats"
 	httpcontroller "backend/internal/controller/http"
+	getme "backend/internal/user/get_me"
 	"backend/internal/user/login_user"
 	"backend/internal/user/register_user"
 	"backend/internal/user/search_user"
@@ -48,6 +49,7 @@ func AppRun(ctx context.Context, c config.Config) error {
 	wsServer := wsserver.New(pgPool, jwtManager)
 	wsServer.Start()
 
+	getme.New(pgPool, jwtManager)
 	login_user.New(pgPool, jwtManager)
 	register_user.New(pgPool)
 	search_user.New(pgPool)

@@ -15,6 +15,7 @@ const MOCK_CHAT_STATUS: Record<
 };
 
 function getChatDisplayName(chat: Chat, currentUserId: number): string {
+  console.log(chat);
   const others = chat.users.filter((u) => u.id !== currentUserId);
   return others.length
     ? others.map((u) => u.name).join(", ")

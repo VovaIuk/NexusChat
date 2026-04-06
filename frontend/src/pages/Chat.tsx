@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-import { login } from '../api/auth';
 import '../components/chat/chat.css';
 import '../components/chat/theme.css';
 import ChatView from '../components/chat/ChatView';
@@ -9,18 +7,6 @@ import { UserProvider } from '../contexts/UserContext';
 import { SocketProvider } from '../contexts/SocketContext';
 
 export default function Chat() {
-  useEffect(() => {
-    async function initLogin() {
-      try {
-        const data = await login("alice_dev", "alice1234");
-        localStorage.setItem("token", data.token.refresh);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    initLogin();
-  }, []);
-
   return (
     <UserProvider>
       <ChatProvider>
@@ -36,5 +22,3 @@ export default function Chat() {
     </UserProvider>
   );
 }
-
-//TODO: добавить анимацию сообщениям

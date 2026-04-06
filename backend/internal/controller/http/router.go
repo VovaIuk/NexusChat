@@ -3,6 +3,7 @@ package httpcontroller
 import (
 	"backend/internal/chat/get_chat_messages"
 	getchats "backend/internal/chat/get_chats"
+	getme "backend/internal/user/get_me"
 	"backend/internal/user/login_user"
 	"backend/internal/user/register_user"
 	"backend/internal/user/search_user"
@@ -43,6 +44,8 @@ func Router(ws *wsserver.WsServer, jwtManager *jwttoken.JWTManager) http.Handler
 		ws.Handler(c.Response(), c.Request())
 		return nil
 	})
+
+	v1.GET("/me", getme.HTTPv1)
 
 	v1.POST("/login", func(c echo.Context) error {
 		login_user.HTTP_V1(c.Response(), c.Request())

@@ -129,6 +129,30 @@ paths:
                       type:
                         type: string
                         example: "Bearer"
+  /v1/me:
+    get:
+      summary: Получить пользователя по токену
+      security:
+        - bearerAuth: []
+      tags: [Private]
+      responses:
+        "200":
+          description: Успешный запрос
+          content:
+            aplication/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  tag: 
+                    type: string
+                    example: "example_user_tag"
+                  name:
+                    type: string
+                    example: "alex"
+      
 
   /v1/users:
     get:
