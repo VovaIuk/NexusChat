@@ -30,7 +30,7 @@ export default function LoginForm() {
   }
 
   return (
-    <AuthCard title="Вход" subtitle="Войдите в аккаунт NexusChat">
+    <AuthCard title="Вход" subtitle="Войдите в аккаунт в Народном-чате">
       <form className="auth-form" onSubmit={handleSubmit}>
         <label className="auth-label" htmlFor="usertag">
           Usertag

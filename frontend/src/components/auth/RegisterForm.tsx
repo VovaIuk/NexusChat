@@ -29,7 +29,7 @@ export default function RegisterForm() {
   }
 
   return (
-    <AuthCard title="Регистрация" subtitle="Создайте аккаунт в NexusChat">
+    <AuthCard title="Регистрация" subtitle="Создайте аккаунт в Народном-чате">
       <form className="auth-form" onSubmit={handleSubmit}>
         <label className="auth-label" htmlFor="register-usertag">
           Usertag
