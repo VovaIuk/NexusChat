@@ -20,8 +20,8 @@ type User struct {
 }
 
 func NewUser(tag, username, password string) (User, error) {
-	if tag == "" {
-		return User{}, errors.New("tag cannot be empty")
+	if len(tag) < 5 {
+		return User{}, errors.New("password must be at least 5 characters long")
 	}
 	if username == "" {
 		return User{}, errors.New("username cannot be empty")

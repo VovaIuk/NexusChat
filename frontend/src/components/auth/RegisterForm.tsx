@@ -42,6 +42,7 @@ export default function RegisterForm() {
             onChange={(e) => setTag(e.target.value)}
             placeholder="new_user"
             autoComplete="username"
+            minLength={8}
             required
           />
         </label>
