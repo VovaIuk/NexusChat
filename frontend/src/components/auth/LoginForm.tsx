@@ -1,10 +1,37 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, type SubmitEvent } from 'react'
 import AuthCard from "./AuthCard";
 
+import {login} from "../../api/auth"
+import {useUser} from "../../contexts/UserContext"
+
 export default function LoginForm() {
+  console.log("Satrt login form");
+
+  const navigate = useNavigate();
+  const [tag, setTag] = useState("");
+  const [password, setPassword] = useState("");
+  const {setUser} = useUser();
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: SubmitEvent<HTMLFormElement>){
+    console.log("press login button");
+    e.preventDefault();
+    setError("")
+
+    try {
+      const data = await login(tag, password);
+      localStorage.setItem("token", data.token.refresh);
+      setUser(data.user);
+      navigate("/");
+    } catch{
+      setError("Неверный логин или пароль");
+    }
+  }
+
   return (
     <AuthCard title="Вход" subtitle="Войдите в аккаунт NexusChat">
-      <form className="auth-form">
+      <form className="auth-form" onSubmit={handleSubmit}>
         <label className="auth-label" htmlFor="usertag">
           Usertag
           <input
@@ -12,6 +39,8 @@ export default function LoginForm() {
             id="usertag"
             name="usertag"
             type="text"
+            value={tag}
+            onChange={(e)=>setTag(e.target.value)}
             placeholder="@user"
             autoComplete="username"
           />
@@ -24,12 +53,15 @@ export default function LoginForm() {
             id="password"
             name="password"
             type="password"
+            value={password}
+            onChange={(e)=>setPassword(e.target.value)}
             placeholder="Введите пароль"
             autoComplete="current-password"
           />
         </label>
 
-        <button className="auth-button" type="button">
+        {error && <p className="auth-error">{error}</p>}
+        <button className="auth-button" type="submit">
           Войти
         </button>
       </form>
