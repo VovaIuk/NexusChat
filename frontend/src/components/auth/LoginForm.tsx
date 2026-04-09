@@ -41,8 +41,9 @@ export default function LoginForm() {
             type="text"
             value={tag}
             onChange={(e)=>setTag(e.target.value)}
-            placeholder="@user"
+            placeholder="user"
             autoComplete="username"
+            required
           />
         </label>
 
@@ -57,6 +58,7 @@ export default function LoginForm() {
             onChange={(e)=>setPassword(e.target.value)}
             placeholder="Введите пароль"
             autoComplete="current-password"
+            required
           />
         </label>
 
