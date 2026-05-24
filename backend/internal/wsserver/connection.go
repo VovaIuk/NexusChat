@@ -6,6 +6,7 @@ import (
 	"backend/internal/adapter/postgres"
 	"backend/internal/domain"
 	jwttoken "backend/pkg/jwt_token"
+	"backend/pkg/metrics"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -127,10 +128,14 @@ func (ws *WsServer) readFromClient(conn *websocket.Conn) {
 		}
 	}
 	ws.mutex.Lock()
-	client_rooms := ws.connections[conn].Rooms
+	client := ws.connections[conn]
+	client_rooms := client.Rooms
 	delete(ws.connections, conn)
-	for chat_id := range client_rooms {
-		delete(ws.rooms[chat_id], conn)
+	for _, chatID := range client_rooms {
+		delete(ws.rooms[chatID], conn)
+	}
+	if client.UserID != 0 {
+		metrics.WsConnections.Dec()
 	}
 	ws.mutex.Unlock()
 }
@@ -161,6 +166,7 @@ func (ws *WsServer) authClient(conn *websocket.Conn, data AuthData) error {
 	client.Usertag = userClaims.Usertag
 	client.Rooms = chatIDs
 	ws.connections[conn] = client
+	metrics.WsConnections.Inc()
 	ws.mutex.Unlock()
 
 	return nil
@@ -176,6 +182,8 @@ func (ws *WsServer) runBroadcast() {
 			continue
 		}
 		msg.MessageID = msgID
+		metrics.MessagesCreatedTotal.Inc()
+		metrics.WsBroadcastTotal.Inc()
 		conns := ws.getRoomConnections(msg.ChatID)
 		if conns == nil {
 			continue

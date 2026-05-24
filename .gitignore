@@ -53,5 +53,8 @@ tasks.txt
 text.txt
 
 .env
+
+# k6
+k6/results/
 /frontend2
 conn.go

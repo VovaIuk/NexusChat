@@ -33,7 +33,7 @@ func Router(ws *wsserver.WsServer, jwtManager *jwttoken.JWTManager) http.Handler
 
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestLogger())
-	e.Use(metrics.RequestCounter())
+	e.Use(metrics.HTTPMiddleware())
 
 	e.StaticFS("/api/docs", echo.MustSubFS(docsFS, "docs"))
 

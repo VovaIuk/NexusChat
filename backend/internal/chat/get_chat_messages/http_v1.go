@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"backend/pkg/metrics"
 	pkg_middleware "backend/pkg/middleware"
 
 	"github.com/labstack/echo/v4"
@@ -35,6 +36,8 @@ func HTTPv1(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
+
+	metrics.RecordChatHistory(input.BeforeMessageID != nil, input.Limit, len(output.Messages))
 
 	return c.JSON(http.StatusOK, output)
 }

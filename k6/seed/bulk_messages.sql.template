@@ -1,0 +1,12 @@
+-- Массовая вставка сообщений в чат 1 (Alice & Bob) для демонстрации больших данных.
+-- Плейсхолдер __COUNT__ подставляется в run.sh
+
+DELETE FROM messages WHERE text LIKE 'k6 seed #%';
+
+INSERT INTO messages (user_id, chat_id, text, time)
+SELECT
+  CASE WHEN (i % 2) = 0 THEN 1 ELSE 2 END,
+  1,
+  'k6 seed #' || i,
+  TIMESTAMPTZ '2024-06-01 00:00:00+00' + (i * interval '1 second')
+FROM generate_series(1, __COUNT__) AS i;

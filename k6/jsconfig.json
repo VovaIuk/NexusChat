@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "noEmit": true,
+    "module": "ESNext",
+    "target": "ES2020"
+  },
+  "include": ["./**/*.js"],
+  "exclude": []
+}

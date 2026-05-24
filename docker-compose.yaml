@@ -66,6 +66,20 @@ services:
     depends_on:
       - backend
 
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: ${COMPOSE_PROJECT_NAME}-postgres-exporter
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
   prometheus:
     image: prom/prometheus:latest
     container_name: ${COMPOSE_PROJECT_NAME}-prometheus
@@ -75,9 +89,11 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
+    depends_on:
+      - backend
+      - postgres-exporter
     networks:
       - app_network
-
 
   grafana:
     image: grafana/grafana:latest
@@ -87,6 +103,10 @@ services:
       - "13000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
     networks:
       - app_network
 
