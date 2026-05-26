@@ -81,19 +81,19 @@ k6 run k6/scenarios/ws-messages.js
 С параметрами:
 
 ```powershell
-k6 run -e BASE_URL=http://localhost:8003/api -e SCROLL_PAGES=10 k6/scenarios/load.js
+k6 run -e BASE_URL=http://localhost:8004/api -e SCROLL_PAGES=10 k6/scenarios/load.js
 ```
 
 ## Конфигурация
 
-URL API по умолчанию задаётся в **`k6/config.ps1`** (`$K6_BASE_URL`). Его подхватывают `run-smoke.ps1`, `run-load.ps1`, `run-ws.ps1`.  
-При прямом `k6 run` без скриптов то же значение — в `k6/lib/config.js` (переменная `BASE_URL`).
+URL API по умолчанию задаётся в **`k6/base-url.txt`** (единая точка).  
+Его читают и PowerShell-скрипты (`k6/config.ps1` → `run-smoke.ps1`, `run-load.ps1`, `run-ws.ps1`), и прямой `k6 run` через `k6/lib/config.js` (переменная `BASE_URL`).
 
 ## Переменные окружения k6
 
 | Переменная              | По умолчанию                 | Описание                              |
 |-------------------------|------------------------------|---------------------------------------|
-| `BASE_URL`              | см. `k6/config.ps1`          | URL API backend                       |
+| `BASE_URL`              | см. `k6/base-url.txt`        | URL API backend                       |
 | `CHAT_ID`               | `1`                          | Чат (история и WS-сообщения)          |
 | `HISTORY_LIMIT`         | `50`                         | `limit` в запросе истории             |
 | `SCROLL_PAGES`          | `8`                          | Страниц пагинации за проход           |
@@ -107,7 +107,7 @@ WS-тест (`ws-messages.js`) использует только **alice** и **
 
 ## Если API через nginx
 
-Измените `$K6_BASE_URL` в `k6/config.ps1` или передайте параметр:
+Измените URL в `k6/base-url.txt` или передайте параметр:
 
 ```powershell
 .\k6\scripts\run-load.ps1 -BaseUrl "http://localhost:8004/api"

@@ -1,5 +1,12 @@
-// Default must match k6/config.ps1 ($K6_BASE_URL)
-export const BASE_URL = __ENV.BASE_URL || 'http://localhost:8003/api';
+let BASE_URL_DEFAULT = 'http://localhost:8004/api';
+try {
+  // Single source of truth for default API URL.
+  BASE_URL_DEFAULT = open('k6/base-url.txt').trim();
+} catch (e) {
+  // Keep local fallback if file is unavailable.
+}
+
+export const BASE_URL = __ENV.BASE_URL || BASE_URL_DEFAULT;
 export const CHAT_ID = parseInt(__ENV.CHAT_ID || '1', 10);
 export const HISTORY_LIMIT = parseInt(__ENV.HISTORY_LIMIT || '50', 10);
 export const SCROLL_PAGES = parseInt(__ENV.SCROLL_PAGES || '8', 10);
