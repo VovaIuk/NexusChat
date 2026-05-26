@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: "API для взаимодействия с прошивками"
+  title: "API для взаимодействия с народным чатом"
   version: 1.0.0
 
 servers:
