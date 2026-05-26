@@ -39,7 +39,7 @@ func New(postgres *postgres.Pool, jwtManager *jwttoken.JWTManager) *WsServer {
 		jwtManager: jwtManager,
 		upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
-				if r.Header.Get("Origin") == "http://localhost:5173" || r.Header.Get("Origin") == "http://xn----7sbbozvcgr0a7c4b.xn--p1ai:5173" {
+				if r.Header.Get("Origin") == "http://localhost" || r.Header.Get("Origin") == "http://xn----7sbbozvcgr0a7c4b.xn--p1ai" {
 					return true
 				}
 				//return false
