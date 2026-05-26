@@ -1,43 +1,108 @@
 asyncapi: 2.6.0
 info:
-  title: Simple Chat API
+  title: NexusChat WebSocket API
   version: 1.0.0
-  description: Простой пример AsyncAPI для чат-приложения
 
 servers:
-  production:
-    url: ws://localhost:8000/api/v1/ws
+  local:
+    url: ws://localhost:8004/api/v1/ws
     protocol: ws
-    description: Production WebSocket server
 
 channels:
-  chat/message:
-    description: Основной канал для обмена сообщениями
+  /api/v1/ws:
+    bindings:
+      ws:
+        method: GET
     publish:
-      summary: Отправить сообщение в чат
       message:
-        contentType: application/json
-        payload:
-          type: object
-          properties:
-            username:
-              type: string
-            message:
-              type: string
-            time:
-              type: string
-              format: date-time
+        oneOf:
+          - $ref: '#/components/messages/AuthEnvelope'
+          - $ref: '#/components/messages/ChatMessageEnvelope'
     subscribe:
-      summary: Получить сообщение из чата
       message:
-        contentType: application/json
-        payload:
-          type: object
-          properties:
-            username:
-              type: string
-            message:
-              type: string
-            time:
-              type: string
-              format: date-time
+        $ref: '#/components/messages/BroadcastMessage'
+
+components:
+  schemas:
+    Envelope:
+      type: object
+      required: [type, data]
+      properties:
+        type:
+          type: string
+        data:
+          type: string
+          description: JSON.stringify(payload)
+
+    AuthPayload:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+
+    ChatMessagePayload:
+      type: object
+      required: [chat_id, text]
+      properties:
+        chat_id:
+          type: integer
+        text:
+          type: string
+
+    BroadcastMessage:
+      type: object
+      required: [message_id, user_id, username, usertag, chat_id, text, time]
+      properties:
+        message_id:
+          type: integer
+        user_id:
+          type: integer
+        username:
+          type: string
+        usertag:
+          type: string
+        chat_id:
+          type: integer
+        text:
+          type: string
+        time:
+          type: string
+          format: date-time
+
+  messages:
+    AuthEnvelope:
+      messageId: auth
+      name: auth
+      title: auth
+      contentType: application/json
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/Envelope'
+          - properties:
+              type:
+                const: auth
+              data:
+                description: AuthPayload
+
+    ChatMessageEnvelope:
+      messageId: chat_message
+      name: chat_message
+      title: chat_message
+      contentType: application/json
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/Envelope'
+          - properties:
+              type:
+                const: chat_message
+              data:
+                description: ChatMessagePayload
+
+    BroadcastMessage:
+      messageId: broadcast
+      name: broadcast
+      title: broadcast
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/BroadcastMessage'
